@@ -28,10 +28,10 @@ static bool add_node(Node **list, Node **tail, AnimalType animtable[], int id)
 bool animals_addanimal(List *list, AnimalType animtable[])
 {
     list->len++;
-    return add_node(&list->head, &list->tail, animtable, list->idcount++);
+    return add_node(&list->head, &list->tail, animtable, ++list->idcount);
 }
 
-void delete_node(Node **list, int id)
+void animals_kill(Node **list, int id)
 {
     Node *cur = *list, *prev = NULL;
 
@@ -49,18 +49,7 @@ void delete_node(Node **list, int id)
     free(cur);
 }
 
-Node *find_node(Node *list, int id)
-{
-    Node *anim = list;
-    for (; anim != NULL && anim->animal.id < id; anim = anim->next)
-        ; // empty loop
-
-    if (anim != NULL && anim->animal.id == id)
-        return anim;
-    return NULL;
-}
-
-void animals_destroy(Node *list)
+void animals_killall(Node *list)
 {
     Node *dummy = NULL;
     for (; list != NULL; list = dummy) {
@@ -79,5 +68,15 @@ void animals_look(List list)
             an->animal.type.defense, an->animal.type.value,
             an->animal.distance);
     }
-    putchar('\n');
+}
+
+SceneAnimal *animals_find(Node *list, int id)
+{
+    Node *anim = list;
+    for (; anim != NULL && anim->animal.id < id; anim = anim->next)
+        ; // empty loop
+
+    if (anim != NULL && anim->animal.id == id)
+        return &anim->animal;
+    return NULL;
 }

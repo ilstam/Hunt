@@ -65,7 +65,9 @@ typedef struct {
 } List;
 
 bool animals_addanimal(List *list, AnimalType animtable[]) ;
+void animals_kill(Node **list, int id);
+void animals_killall(Node *list);
 void animals_look(List list);
-void animals_destroy(Node *list);
+SceneAnimal *animals_find(Node *list, int id);
 
 #endif
