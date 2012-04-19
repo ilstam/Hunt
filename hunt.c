@@ -51,20 +51,24 @@ void player_status(Player player)
            player.weapon.value, player.bullets);
 }
 
-void shoot(CommandType command, List *list, Player *player)
+bool shoot(CommandType command, List *list, Player *player)
 {    
     SceneAnimal *animal = NULL;    
     int id = strtol(command.params[0], NULL, 10), damage;
     
     if (command.params[command.nparams] != NULL) {
         puts("You can't shoot two animals at once.");
-        return;
+        return false;
     }
     
     if (id == 0 || (animal = animals_find(list->head, id)) == NULL) {
         printf("%s is not a valid animal id\n", command.params[0]);
-        return;
+        return false;
     }
+    
+    puts("BOOM!");
+    if (player->weapon.distance < animal->distance)
+        return true;
     
     damage = player->weapon.attack + 50 - animal->type.defense;
     // a divergence 0 to 10 from the standard
@@ -76,8 +80,30 @@ void shoot(CommandType command, List *list, Player *player)
             animal->type.name, animal->type.value);
         player->gold += animal->type.value;
         player->xp += animal->type.value;
+        player->capedanimals[animal->type.id]++;
+        list->len--;
         animals_kill(&list->head, id);        
     };
+    return true;
+}
+
+void exit_msg(Player player, AnimalType animtable[])
+{
+    printf("\nThis adventure is over.\nYou've made %d xp points and died "
+           "holding a %s.\n", player.xp, player.weapon.name);
+           
+    for (register int y = 0; y < MAX_ANIMALTYPES; y++)
+        if (player.capedanimals[y] > 0)
+            goto print_capedanimals;
+    puts("\nYou haven't captured any animals.\n");
+    return;
+
+print_capedanimals:    
+    printf("\nYou have also captured: ");
+    for (register int i = 0; i < MAX_ANIMALTYPES; i++)
+        if (player.capedanimals[i] > 0)
+            printf("%d %ss, ", player.capedanimals[i], animtable[i].name);
+    puts("\n");
 }
 
 ComTypeId lookup_alias(CommandType cmdtable[], char *alias)
@@ -136,9 +162,9 @@ int main(void)
     WeaponType weaptable[MAX_WEAPONS] = {
         // .id             .name    .attack  .distance .value
         {WEAP_SHOTGUN,   "Shotgun",   100,      100,     200},
-        {WEAP_RIFLE,     "Rifle",      85,       55,     100},
-        {WEAP_HANDGUN,   "Handgun",    65,       30,      50},
-        {WEAP_SLING,     "Sling",      50,       10,       0}
+        {WEAP_RIFLE,     "Rifle",      85,       80,     100},
+        {WEAP_HANDGUN,   "Handgun",    65,       50,      50},
+        {WEAP_SLING,     "Sling",      50,       30,       0}
     };
 
     CommandType cmdtable[MAX_COMMANDS] = {
@@ -170,17 +196,22 @@ int main(void)
         parser(input, &command, cmdtable);
 
         switch (command.id) {
-            case CMD_SHOOT: shoot(command, &animals, &player); break;
-            case CMD_LOOK: animals_look(animals); break;
-            case CMD_BUY: puts("cmdbuy"); break;
-            case CMD_STATUS: player_status(player); continue; break;
-            case CMD_HELP: puts("cmdhelp"); continue; break;
-            case CMD_EXIT: puts("cmdexit"); goto exit_success; break;
-            case CMD_INVALID: default: puts("Unkown command"); continue; break;
+            case CMD_SHOOT: 
+                if (shoot(command, &animals, &player)) 
+                    goto animals_turn; 
+                break;
+            case CMD_LOOK: 
+                animals_look(animals); 
+                goto animals_turn;
+            case CMD_BUY: puts("cmdbuy"); goto animals_turn; break;
+            case CMD_STATUS: player_status(player); break;
+            case CMD_HELP: puts("cmdhelp"); break;
+            case CMD_EXIT: exit_msg(player, animtable); goto exit_success;
+            case CMD_INVALID: default: puts("Unkown command"); break;
         }
+        continue;
 
-        //ANIMALS TURN
-        
+    animals_turn:        
         rounds++;
         if (!(rounds % ADD_ANIM_ROUNDS))
             if (animals_addanimal(&animals, animtable))
