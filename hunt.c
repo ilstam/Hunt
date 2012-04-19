@@ -45,10 +45,39 @@ typedef struct {
 void player_status(Player player)
 {
     printf("Health: %d, XP: %d, Gold: %d\n"
-           "Weapon: %s (attack=%d, distance=%d, value=%d), Bullets: %d\n\n",
+           "Weapon: %s (attack=%d, distance=%d, value=%d), Bullets: %d\n",
            player.health, player.xp, player.gold, player.weapon.name,
            player.weapon.attack, player.weapon.distance,
            player.weapon.value, player.bullets);
+}
+
+void shoot(CommandType command, List *list, Player *player)
+{    
+    SceneAnimal *animal = NULL;    
+    int id = strtol(command.params[0], NULL, 10), damage;
+    
+    if (command.params[command.nparams] != NULL) {
+        puts("You can't shoot two animals at once.");
+        return;
+    }
+    
+    if (id == 0 || (animal = animals_find(list->head, id)) == NULL) {
+        printf("%s is not a valid animal id\n", command.params[0]);
+        return;
+    }
+    
+    damage = player->weapon.attack + 50 - animal->type.defense;
+    // a divergence 0 to 10 from the standard
+    damage += ((rand() % 5) + 1) - ((rand() % 5) + 1);    
+    animal->health -= damage;
+    
+    if (animal->health <= 0) {
+        printf("The %s is dead! You gain %d gold and xp!\n", 
+            animal->type.name, animal->type.value);
+        player->gold += animal->type.value;
+        player->xp += animal->type.value;
+        animals_kill(&list->head, id);        
+    };
 }
 
 ComTypeId lookup_alias(CommandType cmdtable[], char *alias)
@@ -81,7 +110,7 @@ void parser(char *input, CommandType *command, CommandType cmdtable[])
     }
 
     memcpy(command, &cmdtable[ret], sizeof(CommandType));
-    for (register int i = 0; i < command->nparams && i < (ntokens - 1); i++)
+    for (register int i = 0; i < (ntokens - 1); i++)
         command->params[i] = tokens[i+1];
 }
 
@@ -106,7 +135,7 @@ int main(void)
 
     WeaponType weaptable[MAX_WEAPONS] = {
         // .id             .name    .attack  .distance .value
-        {WEAP_SHOTGUN,   "Shotgun",   100,      100,     150},
+        {WEAP_SHOTGUN,   "Shotgun",   100,      100,     200},
         {WEAP_RIFLE,     "Rifle",      85,       55,     100},
         {WEAP_HANDGUN,   "Handgun",    65,       30,      50},
         {WEAP_SLING,     "Sling",      50,       10,       0}
@@ -141,21 +170,24 @@ int main(void)
         parser(input, &command, cmdtable);
 
         switch (command.id) {
-            case CMD_SHOOT: puts("cmdshoot"); rounds++; break;
-            case CMD_LOOK: animals_look(animals); rounds++; break;
-            case CMD_BUY: puts("cmdbuy"); rounds++; break;
-            case CMD_STATUS: player_status(player); break;
-            case CMD_HELP: puts("cmdhelp"); break;
+            case CMD_SHOOT: shoot(command, &animals, &player); break;
+            case CMD_LOOK: animals_look(animals); break;
+            case CMD_BUY: puts("cmdbuy"); break;
+            case CMD_STATUS: player_status(player); continue; break;
+            case CMD_HELP: puts("cmdhelp"); continue; break;
             case CMD_EXIT: puts("cmdexit"); goto exit_success; break;
-            case CMD_INVALID: default: puts("Unkown command"); break;
+            case CMD_INVALID: default: puts("Unkown command"); continue; break;
         }
 
-        if (!(rounds % ADD_ANIM_ROUNDS) && rounds != 0)
+        //ANIMALS TURN
+        
+        rounds++;
+        if (!(rounds % ADD_ANIM_ROUNDS))
             if (animals_addanimal(&animals, animtable))
                 puts("\nBe careful! Α new animal appeared from nowhere!");
     }
 
 exit_success:
-    animals_destroy(animals.head);
+    animals_killall(animals.head);
     exit(EXIT_SUCCESS);
 }
