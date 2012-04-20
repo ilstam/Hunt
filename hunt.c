@@ -138,7 +138,7 @@ bool shoot(CommandType command, List *list, Player *player)
     return true;
 }
 
-void buy(CommandType command, Player *player, WeaponType weaptable[])
+bool buy(CommandType command, Player *player, WeaponType weaptable[])
 {
     char input[MAX_INPUT+1], *tokens[2] = {NULL};
     int i, num, cost;
@@ -146,7 +146,7 @@ void buy(CommandType command, Player *player, WeaponType weaptable[])
     
     if (command.params[0] == NULL) {
         puts("What do you want to buy?");
-        return;
+        return false;
     }
     
     if (!strcmp(command.params[0], "bullets") || 
@@ -155,7 +155,7 @@ void buy(CommandType command, Player *player, WeaponType weaptable[])
         
         if (command.params[1] == NULL) {
             puts("Be more specific.");
-            return;
+            return false;
         }
         
         if (!strcmp(command.params[0], "weapon")) {
@@ -166,7 +166,7 @@ void buy(CommandType command, Player *player, WeaponType weaptable[])
                 }                
             if (!found) {
                 puts("There is no weapon with such name.");
-                return;                
+                return false;             
             }
             cost = weaptable[i].value;
         }        
@@ -174,7 +174,7 @@ void buy(CommandType command, Player *player, WeaponType weaptable[])
             num = strtol(command.params[1], NULL, 10);
             if (num <= 0) {
                 printf("%s is not a valid positive integer.\n", command.params[1]);
-                return;
+                return false;
             }            
             cost = !strcmp(command.params[0], "bullets") ? BULLET_COST : DRUG_COST;
             cost *= num;
@@ -183,7 +183,7 @@ void buy(CommandType command, Player *player, WeaponType weaptable[])
         printf("You need %d gold in order to buy this stuff.\n", cost);        
         if (player->gold < cost) {
             puts("Sorry, you don't have enough gold.");
-            return;
+            return false;
         }
         
         printf("Are you sure that you want to proceed? (y/n) ");
@@ -194,7 +194,7 @@ void buy(CommandType command, Player *player, WeaponType weaptable[])
                 (strcmp(s_tolower(tokens[0]), "y") && 
                 strcmp(s_tolower(tokens[0]), "yes"))) {
             puts("canceled");
-            return;
+            return false;
             }            
         
         if (!strcmp(command.params[0], "bullets")) {
@@ -213,9 +213,11 @@ void buy(CommandType command, Player *player, WeaponType weaptable[])
         }
         
         puts("Done!");
-        return;
+        return true;
     }
+
     printf("You can't buy %s.\n", command.params[0]);
+    return false;
 } 
 
 
@@ -317,7 +319,7 @@ int main(void)
     };
 
                // .health   .xp  .gold .bullets .weapon  .capendanimals
-    Player player = {79,    0,    100,    3,  weaptable[3],   {0}};
+    Player player = {100,    0,    100,    3,  weaptable[3],   {0}};
     List animals = {NULL, NULL, 0, 0};
 
     char input[MAX_INPUT+1];
@@ -343,7 +345,8 @@ int main(void)
                 animals_look(animals); 
                 goto animals_turn;
             case CMD_BUY: 
-                buy(command, &player, weaptable);
+                if(buy(command, &player, weaptable))
+                    goto animals_turn;;
                 break;
             case CMD_STATUS: 
                 player_status(player); 
