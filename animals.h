@@ -64,8 +64,8 @@ typedef struct {
     int    idcount; // count added animals
 } List;
 
-bool animals_addanimal(List *list, AnimalType animtable[]) ;
-void animals_kill(Node **list, int id);
+bool animals_addanimal(List *list, AnimalType animtable[]);
+void animals_kill(Node **list, Node **tail, int id);
 void animals_killall(Node *list);
 void animals_look(List list);
 SceneAnimal *animals_find(Node *list, int id);

@@ -50,7 +50,7 @@ bool animals_addanimal(List *list, AnimalType animtable[])
     return add_node(&list->head, &list->tail, animtable, ++list->idcount);
 }
 
-void animals_kill(Node **list, int id)
+void animals_kill(Node **list, Node **tail, int id)
 {
     Node *cur = *list, *prev = NULL;
 
@@ -63,8 +63,11 @@ void animals_kill(Node **list, int id)
 
     if (prev == NULL)
         *list = cur->next;
-    else
-        prev->next = cur->next;
+    else  {
+        prev->next = cur->next;        
+        if (cur->next == NULL)
+            *tail = prev;
+    }
     free(cur);
 }
 
@@ -81,11 +84,16 @@ void animals_look(List list)
 {
     printf("The following %d animals are on the scene now: \n\n", list.len);
     for (Node *an = list.head; an != NULL; an = an->next) {
-        printf("%d:%s  (health=%d att=%d def=%d value=%d dist=%d)\n",
+        printf("%d:%s           \t(health=%d att=%d def=%d dist=%d mood=",
             an->animal.id, an->animal.type.name,
             an->animal.health, an->animal.type.attack,
-            an->animal.type.defense, an->animal.type.value,
-            an->animal.distance);
+            an->animal.type.defense, an->animal.distance);
+        switch (an->animal.mood) {
+            case ANIM_SCARED: puts("scared)"); break;
+            case ANIM_NEUTRAL: puts("neutral)"); break;
+            case ANIM_AGGRESSIVE: puts("aggressive)"); break;
+            default: break;
+        }
     }
 }
 
