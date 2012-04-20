@@ -20,7 +20,7 @@
 "Only the following commands are understood by the program:\n\n"                      \
 "  Command             Description\n"                                                 \
 " -------------------------------------------------------------------------\n"        \
-"  shoot <id>          shoot the animal with the corresponding id\n"                  \
+"  shoot <id>          shoots the animal with the corresponding id\n"                 \
 "  look                displays info about all animals on the scene\n"                \
 "  status              displays info about player\n"                                  \
 "  buy <type> <spef>   buys the requested stuff\n"                                    \
