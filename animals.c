@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2012 Ilias Stamatis <stamatis.iliass@gmail.com>
- * 
+ *
  * This file is part of Hunt.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */ 
+ */
 
 #include "animals.h"
 
@@ -64,7 +64,7 @@ void animals_kill(Node **list, Node **tail, int id)
     if (prev == NULL)
         *list = cur->next;
     else  {
-        prev->next = cur->next;        
+        prev->next = cur->next;
         if (cur->next == NULL)
             *tail = prev;
     }
@@ -84,10 +84,10 @@ void animals_look(List list)
 {
     printf("The following %d animals are on the scene now: \n\n", list.len);
     for (Node *an = list.head; an != NULL; an = an->next) {
-        printf("%d:%s           \t(health=%d att=%d def=%d dist=%d mood=",
+        printf("%d:%s           \t(hlth=%d att=%d def=%d spd=%d dist=%d mood=",
             an->animal.id, an->animal.type.name,
             an->animal.health, an->animal.type.attack,
-            an->animal.type.defense, an->animal.distance);
+            an->animal.type.defense, an->animal.type.speed, an->animal.distance);
         switch (an->animal.mood) {
             case ANIM_SCARED: puts("scared)"); break;
             case ANIM_NEUTRAL: puts("neutral)"); break;

@@ -39,6 +39,7 @@ typedef struct {
     char      *name;
     int        attack;    // 0 to 100
     int        defense;   // 0 to 100
+    int        speed;     // 0 to 100
     int        value;     // xp and gold that player gains when capture
                           // such animal --- 0 to 100
 } AnimalType;
