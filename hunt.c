@@ -337,7 +337,7 @@ int main(void)
     for (register int i = 0; i < STARTING_ANIMALS; i++)
         animals_addanimal(&animals, animtable);
 
-    system("clear");
+    system(SYSTEM_CLEAR);
     puts(WELCOME_MSG);
     puts("There are the following animals on the scene: ");
     for (Node *an = animals.head; an != NULL; an = an->next)
