@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2012 Ilias Stamatis <stamatis.iliass@gmail.com>
+ * 
+ * This file is part of Hunt.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */ 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -249,7 +268,7 @@ int main(void)
         // .id             .aliases     .nparams     .params
         {CMD_SHOOT,    {"shoot",  NULL},    1,    {NULL, NULL}},
         {CMD_LOOK,     {"look",   NULL},    0,    {NULL, NULL}},
-        {CMD_BUY,      {"buy",    NULL},    3,    {NULL, NULL}},
+        {CMD_BUY,      {"buy",    NULL},    2,    {NULL, NULL}},
         {CMD_STATUS,   {"status", NULL},    0,    {NULL, NULL}},
         {CMD_HELP,     {"help",    "?"},    0,    {NULL, NULL}},
         {CMD_EXIT,     {"exit", "quit"},    0,    {NULL, NULL}},
