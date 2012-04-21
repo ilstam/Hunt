@@ -19,6 +19,10 @@
 
 #include "animals.h"
 
+/********************************************************************
+ * add_node: Adds a new Node in an ordered linked List.
+ *           Returns true if Node stored properly, else false.
+ ********************************************************************/
 static bool add_node(Node **list, Node **tail, AnimalType animtable[], int id)
 {
     Node *new_node = calloc(1, sizeof(Node));
@@ -28,7 +32,7 @@ static bool add_node(Node **list, Node **tail, AnimalType animtable[], int id)
     new_node->next = NULL;
     new_node->animal.id = id;
     new_node->animal.type.id = rand() % MAX_ANIMALTYPES;
-    memcpy(&new_node->animal.type, &animtable[new_node->animal.type.id], 
+    memcpy(&new_node->animal.type, &animtable[new_node->animal.type.id],
                                                     sizeof(AnimalType));
     new_node->animal.health = STARTING_ANIM_HEALTH;
     new_node->animal.mood = rand () % MAX_MOOD;
@@ -45,12 +49,9 @@ static bool add_node(Node **list, Node **tail, AnimalType animtable[], int id)
     return true;
 }
 
-bool animals_addanimal(List *list, AnimalType animtable[])
-{
-    list->len++;
-    return add_node(&list->head, &list->tail, animtable, ++list->idcount);
-}
-
+/********************************************************************
+ * delete_node: Deletes a Node from an ordered linked list.
+ ********************************************************************/
 static void delete_node(Node **list, Node **tail, int id)
 {
     Node *cur = *list, *prev = NULL;
@@ -72,6 +73,16 @@ static void delete_node(Node **list, Node **tail, int id)
     free(cur);
 }
 
+
+/*********************External functions*******************************/
+
+
+bool animals_addanimal(List *list, AnimalType animtable[])
+{
+    list->len++;
+    return add_node(&list->head, &list->tail, animtable, ++list->idcount);
+}
+
 void animals_kill(List *list, int id)
 {
     list->len--;
@@ -87,13 +98,24 @@ void animals_killall(Node *list)
     }
 }
 
+SceneAnimal *animals_find(Node *list, int id)
+{
+    Node *anim = list;
+    for (; anim != NULL && anim->animal.id < id; anim = anim->next)
+        ; // empty loop
+
+    if (anim != NULL && anim->animal.id == id)
+        return &anim->animal;
+    return NULL;
+}
+
 void animals_look(List list)
 {
     if (!list.len) {
         puts("There are no animals on the scene.");
         return;
     }
-    
+
     printf("The following %d animals are on the scene now: \n\n", list.len);
     for (Node *an = list.head; an != NULL; an = an->next) {
         printf("%d:%s           \t(hlth=%d att=%d def=%d spd=%d dist=%d mood=",
@@ -109,13 +131,24 @@ void animals_look(List list)
     }
 }
 
-SceneAnimal *animals_find(Node *list, int id)
+int animals_attack(SceneAnimal *animal)
 {
-    Node *anim = list;
-    for (; anim != NULL && anim->animal.id < id; anim = anim->next)
-        ; // empty loop
+    printf("\nBEWARE! An angry %s attacks you! Oh, that hurts!\n",
+           animal->type.name);
+    return animal->type.attack * (1.0/5.0) + \
+           ((rand() % 5) + 1) - ((rand() % 5) + 1);
+}
 
-    if (anim != NULL && anim->animal.id == id)
-        return &anim->animal;
-    return NULL;
+void animals_goclose(SceneAnimal *animal)
+{
+    animal->distance -= animal->type.speed * (1.0/6.0);
+    animal->distance -= ((rand() % 5) + 1) - ((rand() % 5) + 1);
+    if (animal->distance < 0)
+        animal->distance = 0;
+}
+
+void animals_goaway(SceneAnimal *animal)
+{
+    animal->distance += animal->type.speed * (1.0/6.0);
+    animal->distance += ((rand() % 5) + 1) - ((rand() % 5) + 1);
 }

@@ -1,11 +1,10 @@
 #ifndef ANIMALS_H
 #define ANIMALS_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <string.h>
-#include <time.h>
+#include <stdio.h>   // printf(), puts()
+#include <stdlib.h>  // calloc(), free(), rand()
+#include <string.h>  // memcopy()
+#include <stdbool.h> // bool, true, false
 
 #define STARTING_ANIM_HEALTH   100
 #define MAX_ANIM_DISTANCE      100
@@ -41,6 +40,7 @@ typedef enum {
     MAX_ANIMMOVES   // their total count
 } AniMove;
 
+
 typedef struct {
     AniTypeId  id;
     char      *name;
@@ -59,7 +59,6 @@ typedef struct {
     int             distance; // distance from player
 } SceneAnimal;
 
-
 typedef struct node {
     SceneAnimal   animal;
     struct node  *next;
@@ -72,10 +71,51 @@ typedef struct {
     int    idcount; // count added animals
 } List;
 
+
+/********************************************************************
+ * animals_addanimal: Adds a new Node to list and increase its len
+ *                    field by 1. Returns true if Node stored properly,
+ *                    else false.
+ ********************************************************************/
 bool animals_addanimal(List *list, AnimalType animtable[]);
+
+/********************************************************************
+ * animals_kill: Deletes a Node from list and decrease its len field
+ *               by 1.
+ ********************************************************************/
 void animals_kill(List *list, int id);
+
+/********************************************************************
+ * animals_killall: Destroys a linked list. Deallocates each of
+ *                  its nodes.
+ ********************************************************************/
 void animals_killall(Node *list);
-void animals_look(List list);
+
+/********************************************************************
+ * animals_find: Search each node of a linked list for a SceneAnimal
+ *               with the corresponding id. Returns a pointer to the
+ *               node that contains that animal if found, else NULL.
+ ********************************************************************/
 SceneAnimal *animals_find(Node *list, int id);
+
+/********************************************************************
+ * animals_look: Displays info about each Node of the list.
+ ********************************************************************/
+void animals_look(List list);
+
+/********************************************************************
+ * animals_attack: Returns the amount of damage that animal causes.
+ ********************************************************************/
+int animals_attack(SceneAnimal *animal);
+
+/********************************************************************
+ * animals_goclose: Decreases animal's distance from the player.
+ ********************************************************************/
+void animals_goclose(SceneAnimal *animal);
+
+/********************************************************************
+ * animals_goaway: Increases animal's distance from the player.
+ ********************************************************************/
+void animals_goaway(SceneAnimal *animal);
 
 #endif
