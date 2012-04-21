@@ -28,7 +28,8 @@ static bool add_node(Node **list, Node **tail, AnimalType animtable[], int id)
     new_node->next = NULL;
     new_node->animal.id = id;
     new_node->animal.type.id = rand() % MAX_ANIMALTYPES;
-    memcpy(&new_node->animal.type, &animtable[new_node->animal.type.id], sizeof(AnimalType));
+    memcpy(&new_node->animal.type, &animtable[new_node->animal.type.id], 
+                                                    sizeof(AnimalType));
     new_node->animal.health = STARTING_ANIM_HEALTH;
     new_node->animal.mood = rand () % MAX_MOOD;
     new_node->animal.distance = rand () % MAX_ANIM_DISTANCE;
@@ -50,7 +51,7 @@ bool animals_addanimal(List *list, AnimalType animtable[])
     return add_node(&list->head, &list->tail, animtable, ++list->idcount);
 }
 
-void animals_kill(Node **list, Node **tail, int id)
+static void delete_node(Node **list, Node **tail, int id)
 {
     Node *cur = *list, *prev = NULL;
 
@@ -71,6 +72,12 @@ void animals_kill(Node **list, Node **tail, int id)
     free(cur);
 }
 
+void animals_kill(List *list, int id)
+{
+    list->len--;
+    delete_node(&list->head, &list->tail, id);
+}
+
 void animals_killall(Node *list)
 {
     Node *dummy = NULL;
@@ -82,6 +89,11 @@ void animals_killall(Node *list)
 
 void animals_look(List list)
 {
+    if (!list.len) {
+        puts("There are no animals on the scene.");
+        return;
+    }
+    
     printf("The following %d animals are on the scene now: \n\n", list.len);
     for (Node *an = list.head; an != NULL; an = an->next) {
         printf("%d:%s           \t(hlth=%d att=%d def=%d spd=%d dist=%d mood=",

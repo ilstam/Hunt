@@ -33,6 +33,13 @@ typedef enum {ANIM_SCARED = 0,
               MAX_MOOD // their total count
 } AniMood;
 
+typedef enum {
+    ANIMOVE_NOTHING = 0,
+    ANIMOVE_ATTACK,
+    ANIMOVE_CLOSE,  // go close to player
+    ANIMOVE_GOAWAY, // go away from player
+    MAX_ANIMMOVES   // their total count
+} AniMove;
 
 typedef struct {
     AniTypeId  id;
@@ -66,7 +73,7 @@ typedef struct {
 } List;
 
 bool animals_addanimal(List *list, AnimalType animtable[]);
-void animals_kill(Node **list, Node **tail, int id);
+void animals_kill(List *list, int id);
 void animals_killall(Node *list);
 void animals_look(List list);
 SceneAnimal *animals_find(Node *list, int id);
