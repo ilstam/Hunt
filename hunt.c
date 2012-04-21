@@ -17,12 +17,16 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "animals.h"
+#include <stdio.h>     // printf(), puts(), fgets(), putchar()
+#include <stdlib.h>    // srand(), rand(), system(), strtol(), exit()
+#include <string.h>    // strcmp(), memcpy()
+#include <stdbool.h>   // bool, true, false
+#include <time.h>      // time()
+
+#include "mylibrary.h" // s_tolower(), s_tokenize()
+#include "animals.h"   // animals_addanimal(), animals_kill(),
+                       // animals_killall(), animals_find()
 #include "weapons.h"
-#include "mylibrary.h"
 #include "info.h"
 
 #define MAX_INPUT              255
@@ -30,12 +34,13 @@
 #define STARTING_ANIMALS         5
 #define ADD_ANIM_ROUNDS          4  // add new animal after each x rounds
 
-#define MAX_CMD_ALIASES          2
-#define MAX_CMD_PARAMS           2
-
 #define DRUG_HEALTH             15
 #define DRUG_COST               20
 #define BULLET_COST              5
+
+#define MAX_CMD_ALIASES          2
+#define MAX_CMD_PARAMS           2
+
 
 typedef enum {
     CMD_INVALID = -1,
@@ -65,6 +70,10 @@ typedef struct {
 } Player;
 
 
+/********************************************************************
+ * shoot: Checks is commands' params is a valid animal id. If so,
+ *        and player has at least 1 bullet, shoots the animal.
+ ********************************************************************/
 bool shoot(CommandType command, List *list, Player *player)
 {
     SceneAnimal *animal = NULL;
@@ -99,13 +108,16 @@ bool shoot(CommandType command, List *list, Player *player)
         printf("The %s is dead! You earn %d gold!\n",
             animal->type.name, animal->type.value);
         player->gold += animal->type.value;
-        player->xp += animal->type.value;
+        player->xp   += animal->type.value;
         player->capedanimals[animal->type.id]++;
         animals_kill(list, id);
     };
     return true;
 }
 
+/********************************************************************
+ * buy: Checks commands' params and does the corresponding actions.
+ ********************************************************************/
 void buy(CommandType command, Player *player, WeaponType weaptable[])
 {
     char input[MAX_INPUT+1], *tokens[2] = {NULL};
@@ -185,6 +197,9 @@ void buy(CommandType command, Player *player, WeaponType weaptable[])
     printf("You can't buy %s.\n", command.params[0]);
 }
 
+/********************************************************************
+ * player_status: Displays player's attributes.
+ ********************************************************************/
 void player_status(Player player)
 {
     printf("Health: %d, XP: %d, Gold: %d\n"
@@ -193,6 +208,11 @@ void player_status(Player player)
            player.weapon.attack, player.weapon.distance, player.bullets);
 }
 
+/********************************************************************
+ * help: If called without parameter, displays a help text. If called
+ *       with animals or weapons as a parameter then prints a table of
+ *       all animals or weapons.
+ ********************************************************************/
 void help(CommandType command, AnimalType animtable[], WeaponType weaptable[])
 {
     if (command.params[0] == NULL) {
@@ -223,6 +243,9 @@ void help(CommandType command, AnimalType animtable[], WeaponType weaptable[])
         printf("%s: invalid parameter\n", command.params[0]);
 }
 
+/********************************************************************
+ * exit_msg: Displays players' achievements.
+ ********************************************************************/
 void exit_msg(Player player, AnimalType animtable[], int rounds)
 {
     printf("\nThis adventure is over.\nYou've made %d xp points and died "
@@ -247,19 +270,23 @@ print_capedanimals:
     puts("\n");
 }
 
+/********************************************************************
+ * animal_move: Chooses and plays a move for a SceneAnimal. The choice
+ *              is random but depends on animal's mood too.
+ ********************************************************************/
 void animal_move(Player *player, SceneAnimal *animal)
 {
     AniMove move;
     int random = rand() % 8; // move choices are 8
-    bool canattack = animal->distance <= 15 ? true : false;    
-    
+    bool canattack = animal->distance <= 15 ? true : false;
+
     #define nth   ANIMOVE_NOTHING
     #define att   ANIMOVE_ATTACK
     #define cls   ANIMOVE_CLOSE
     #define away  ANIMOVE_GOAWAY
-    
+
     switch (animal->mood) {
-        case ANIM_AGGRESSIVE:             
+        case ANIM_AGGRESSIVE:
             if (canattack)
                 move = ((AniMove []) \
                     {att, att, att, att, att, cls, away, nth})[random];
@@ -274,7 +301,7 @@ void animal_move(Player *player, SceneAnimal *animal)
             else
                 move = ((AniMove []) \
                 {away, away, away, away, away, away, cls, nth})[random];
-            break;        
+            break;
         case ANIM_NEUTRAL: default:
             if (canattack)
                 move = ((AniMove []) \
@@ -282,31 +309,29 @@ void animal_move(Player *player, SceneAnimal *animal)
             else
                 move = ((AniMove []) \
                 {cls, cls, cls, away, away, away, nth, nth})[random];
-            break;        
+            break;
     }
-    
+
     switch (move) {
-        case ANIMOVE_ATTACK: 
-            player->health -= animal->type.attack * (1.0/5.0);
-            player->health -= ((rand() % 5) + 1) - ((rand() % 5) + 1);
-            printf("\nBEWARE! An angry %s attacks you! "
-                   "Oh, that hurts!\n", animal->type.name);
-            break;            
-        case ANIMOVE_CLOSE: 
-            animal->distance -= animal->type.speed * (1.0/6.0);
-            animal->distance -= ((rand() % 5) + 1) - ((rand() % 5) + 1);
-            if (animal->distance < 0)
-                animal->distance = 0;            
+        case ANIMOVE_ATTACK:
+            player->health -= animals_attack(animal);
+            break;
+        case ANIMOVE_CLOSE:
+            animals_goclose(animal);
             break;
         case ANIMOVE_GOAWAY:
-            animal->distance += animal->type.speed * (1.0/6.0);
-            animal->distance += ((rand() % 5) + 1) - ((rand() % 5) + 1);
+            animals_goaway(animal);
             break;
         case ANIMOVE_NOTHING: default: break;
     }
 }
 
 
+/********************************************************************
+ * lookup_alias: Checks if alias is an existing alias of a command
+ *               in cmdtable. Returns the id of the corresponding
+ *               command if found, else invalid.
+ ********************************************************************/
 ComTypeId lookup_alias(CommandType cmdtable[], char *alias)
 {
     if (alias == NULL)
@@ -321,6 +346,12 @@ ComTypeId lookup_alias(CommandType cmdtable[], char *alias)
     return CMD_INVALID;
 }
 
+/********************************************************************
+ * parser: Lowerizes input and spilts it into tokens. Checks if the
+ *         first token corresponds to an alias of CommandType in
+ *         cmdtable. If so, sets command's id to the appropriate value
+ *         and fills its params. Else, sets command's id to invalid.
+ ********************************************************************/
 void parser(char *input, CommandType *command, CommandType cmdtable[])
 {
     ComTypeId ret;
@@ -388,25 +419,25 @@ int main(void)
 
     srand((unsigned) time(NULL)); // init pseudo-random seed
 
-    
+
     // start menu
     for (;;) {
         system(SYSTEM_CLEAR);
         printf(START_MENU, APP_NAME);
         fgets(input, sizeof(input), stdin);
-        
+
         char *tokens[2] = {NULL};
         s_tolower(input);
         s_tokenize(input, tokens, 2, " \n");
-        
+
         if (tokens[0] == NULL || tokens[1] != NULL)
             continue;
-            
+
         if (!strcmp(tokens[0], "s"))
             break;
         else if (!strcmp(tokens[0], "c")) {
             system(SYSTEM_CLEAR);
-            printf(CREDITS, APP_NAME, APP_VERSION, AUTHOR, AUTHOR_MAIL, 
+            printf(CREDITS, APP_NAME, APP_VERSION, AUTHOR, AUTHOR_MAIL,
                    APP_NAME, AUTHOR);
             puts("[Press Enter.]");
             fgets(input, sizeof(input), stdin);
@@ -415,7 +446,7 @@ int main(void)
             system(SYSTEM_CLEAR);
             puts(INFO_ABOUT_PLAYING);
             puts("[Press Enter.]");
-            fgets(input, sizeof(input), stdin);            
+            fgets(input, sizeof(input), stdin);
         }
         else if (!strcmp(tokens[0], "q"))
             goto exit_success;
@@ -469,7 +500,7 @@ int main(void)
 
     animals_turn:
         rounds++;
-    
+
         for (Node *an = animals.head; an != NULL; an = an->next) {
             animal_move(&player, &an->animal);
             if (an->animal.distance > 100) {
@@ -481,17 +512,17 @@ int main(void)
                 exit_msg(player, animtable, rounds);
                 goto exit_success;
             }
-        }        
+        }
         if (player.health < 40)
             puts("\nYou are seriously hurt. You should really get some drugs.");
-        
-        
+
+
         if (animals.len < 3)
             if (animals_addanimal(&animals, animtable))
-                puts("\nBe careful! Α new animal appeared from nowhere!");        
+                puts("\nBe careful! Α new animal appeared from nowhere!");
         // at the beggining add a new animal after each x years
         // after 50 rounds add a new animal after each x-2 years
-        if ((rounds > 50 && !(rounds % ADD_ANIM_ROUNDS - 2)) || 
+        if ((rounds > 50 && !(rounds % ADD_ANIM_ROUNDS - 2)) ||
             !(rounds % ADD_ANIM_ROUNDS))
             if (animals_addanimal(&animals, animtable))
                 puts("\nBe careful! Α new animal appeared from nowhere!");
