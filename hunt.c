@@ -182,7 +182,6 @@ void buy(CommandType command, Player *player, WeaponType weaptable[])
         puts("Done!");
         return;
     }
-
     printf("You can't buy %s.\n", command.params[0]);
 }
 
@@ -213,10 +212,10 @@ void help(CommandType command, AnimalType animtable[], WeaponType weaptable[])
     }
 
     else if (! strcmp(command.params[0], "weapons")) {
-        puts("name    \tatt\tdist\tval");
-        puts("------------------------------------");
+        puts("name    \tatt\tdist\t val");
+        puts("-------------------------------------");
         for (i = 0; i < MAX_WEAPONS; i++)
-            printf("%s     \t%3d\t%3d\t%3d\n", weaptable[i].name,
+            printf("%s     \t%3d\t%3d\t%4d\n", weaptable[i].name,
             weaptable[i].attack, weaptable[i].distance, weaptable[i].value);
     }
 
@@ -288,7 +287,7 @@ void animal_move(Player *player, SceneAnimal *animal)
     
     switch (move) {
         case ANIMOVE_ATTACK: 
-            player->health -= animal->type.attack * (1.0/6.0);
+            player->health -= animal->type.attack * (1.0/5.0);
             player->health -= ((rand() % 5) + 1) - ((rand() % 5) + 1);
             printf("\nBEWARE! An angry %s attacks you! "
                    "Oh, that hurts!\n", animal->type.name);
@@ -363,9 +362,9 @@ int main(void)
 
     WeaponType weaptable[MAX_WEAPONS] = {
         // .id             .name    .attack  .distance .value
-        {WEAP_SHOTGUN,   "shotgun",   100,      100,     300},
-        {WEAP_RIFLE,     "rifle",      85,       80,     200},
-        {WEAP_HANDGUN,   "handgun",    65,       50,     100},
+        {WEAP_SHOTGUN,   "shotgun",   100,      100,    1000},
+        {WEAP_RIFLE,     "rifle",      80,       80,     500},
+        {WEAP_HANDGUN,   "handgun",    60,       50,     100},
         {WEAP_SLING,     "sling",      50,       30,       0}
     };
 
@@ -380,7 +379,7 @@ int main(void)
     };
 
                // .health   .xp  .gold .bullets .weapon  .capendanimals
-    Player player = {100,    0,    100,    5,  weaptable[3],   {0}};
+    Player player = {100,    0,    100,   5,  weaptable[3],   {0}};
     List animals = {NULL, NULL, 0, 0};
 
     char input[MAX_INPUT+1];
@@ -388,6 +387,40 @@ int main(void)
     CommandType command = {CMD_INVALID, {NULL, NULL}, 0, {NULL, NULL}};
 
     srand((unsigned) time(NULL)); // init pseudo-random seed
+
+    
+    // start menu
+    for (;;) {
+        system(SYSTEM_CLEAR);
+        printf(START_MENU, APP_NAME);
+        fgets(input, sizeof(input), stdin);
+        
+        char *tokens[2] = {NULL};
+        s_tolower(input);
+        s_tokenize(input, tokens, 2, " \n");
+        
+        if (tokens[0] == NULL || tokens[1] != NULL)
+            continue;
+            
+        if (!strcmp(tokens[0], "s"))
+            break;
+        else if (!strcmp(tokens[0], "c")) {
+            system(SYSTEM_CLEAR);
+            printf(CREDITS, APP_NAME, APP_VERSION, AUTHOR, AUTHOR_MAIL, 
+                   APP_NAME, AUTHOR);
+            puts("[Press Enter.]");
+            fgets(input, sizeof(input), stdin);
+        }
+        else if (!strcmp(tokens[0], "i")) {
+            system(SYSTEM_CLEAR);
+            puts(INFO_ABOUT_PLAYING);
+            puts("[Press Enter.]");
+            fgets(input, sizeof(input), stdin);            
+        }
+        else if (!strcmp(tokens[0], "q"))
+            goto exit_success;
+    }
+
 
     // add some animals on the scene
     for (register int i = 0; i < STARTING_ANIMALS; i++)
@@ -400,6 +433,7 @@ int main(void)
         printf("%d:%s, ", an->animal.id, an->animal.type.name);
     puts("\n");
 
+    // internal command line loop
     for (;;) {
         printf(">>> ");
         fgets(input, sizeof(input), stdin);
@@ -424,6 +458,7 @@ int main(void)
                 help(command, animtable, weaptable);
                 break;
             case CMD_EXIT:
+                exit_msg(player, animtable, rounds);
                 goto exit_success;
                 break;
             case CMD_INVALID: default:
@@ -433,6 +468,8 @@ int main(void)
         continue;
 
     animals_turn:
+        rounds++;
+    
         for (Node *an = animals.head; an != NULL; an = an->next) {
             animal_move(&player, &an->animal);
             if (an->animal.distance > 100) {
@@ -441,24 +478,26 @@ int main(void)
             }
             if (player.health <= 0) {
                 puts("\nAfter many hard fights you're finally dead!");
+                exit_msg(player, animtable, rounds);
                 goto exit_success;
             }
         }        
         if (player.health < 40)
             puts("\nYou are seriously hurt. You should really get some drugs.");
         
-        rounds++;
         
+        if (animals.len < 3)
+            if (animals_addanimal(&animals, animtable))
+                puts("\nBe careful! Α new animal appeared from nowhere!");        
         // at the beggining add a new animal after each x years
-        // after 50 rounds add a new animal after each x-1 years
-        if ((rounds > 50 && !(rounds % ADD_ANIM_ROUNDS - 1)) || 
+        // after 50 rounds add a new animal after each x-2 years
+        if ((rounds > 50 && !(rounds % ADD_ANIM_ROUNDS - 2)) || 
             !(rounds % ADD_ANIM_ROUNDS))
             if (animals_addanimal(&animals, animtable))
                 puts("\nBe careful! Α new animal appeared from nowhere!");
     }
 
 exit_success:
-    exit_msg(player, animtable, rounds);
     animals_killall(animals.head);
     exit(EXIT_SUCCESS);
 }
