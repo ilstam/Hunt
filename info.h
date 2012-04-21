@@ -62,6 +62,6 @@
     " help, ? <table>     if called without parameter, prints this help text\n"          \
     "                        you can user either \"help animals\" or \"help weapons\"\n" \
     "                        to print a table of all animals or weapons\n"               \
-    " exit, quit          exits the program\n"                                           
+    " exit, quit          exits the program\n"
 
 #endif
