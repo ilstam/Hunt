@@ -1,3 +1,17 @@
-Type make to compile.
+HUNT
+-----
+Author: Ilias Stamatis <stamatis.iliass@gmail.com>
+Version: 0.01
 
-To be updated soon...
+Description
+------------
+Hunt is small text adventure game written for fun.
+The program uses its own command line which recognizes specific commands.
+The adventure takes place in a jungle and your target is to capture as many animals as you can.
+For each animal you capture, you earn gold and gain some xp.
+You can buy bullets, better weapons and drugs in case you get hurt by an animal.
+
+Installation
+-------------
+Just type make to compile the program.
+
