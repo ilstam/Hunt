@@ -77,13 +77,19 @@ typedef struct {
 bool shoot(CommandType command, List *list, Player *player)
 {
     SceneAnimal *animal = NULL;
-    int id = strtol(command.params[0], NULL, 10), damage;
+    int id, damage;
+
+    if (command.params[0] == NULL) {
+        puts("Be more specific.");
+        return false;
+    }
 
     if (command.params[command.nparams] != NULL) {
         puts("You can't shoot two animals at once.");
         return false;
     }
 
+    id = strtol(command.params[0], NULL, 10);
     if (id == 0 || (animal = animals_find(list->head, id)) == NULL) {
         printf("%s is not a valid animal id\n", command.params[0]);
         return false;
