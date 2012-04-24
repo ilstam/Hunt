@@ -22,12 +22,19 @@
 #include <string.h>    // strcmp(), memcpy()
 #include <stdbool.h>   // bool, true, false
 #include <time.h>      // time()
+#include <locale.h>    // setlocale()
+#include <libintl.h>   // gettext(), bindtextdomain(), textdomain()
 
 #include "mylibrary.h" // s_tolower(), s_tokenize()
 #include "animals.h"   // animals_addanimal(), animals_kill(),
                        // animals_killall(), animals_find()
 #include "weapons.h"
 #include "info.h"
+
+#define PACKAGE "hunt"
+#define LOCALEDIR "/usr/local/share/locale"
+
+#define _(String)   gettext (String)
 
 #define MAX_INPUT              255
 
@@ -425,6 +432,11 @@ int main(void)
 
     srand((unsigned) time(NULL)); // init pseudo-random seed
 
+    setlocale(LC_ALL, "");
+    bindtextdomain(PACKAGE, LOCALEDIR);
+    textdomain(PACKAGE);
+
+    puts(_("This is an example message; erase me once done reading\n"));
 
     // start menu
     for (;;) {
@@ -445,7 +457,7 @@ int main(void)
             system(SYSTEM_CLEAR);
             printf(CREDITS, APP_NAME, APP_VERSION, AUTHOR, AUTHOR_MAIL,
                    APP_NAME, AUTHOR);
-            puts("[Press Enter.]");
+            puts(_("[Press Enter.]"));
             fgets(input, sizeof(input), stdin);
         }
         else if (!strcmp(tokens[0], "i")) {
@@ -465,7 +477,7 @@ int main(void)
 
     system(SYSTEM_CLEAR);
     puts(WELCOME_MSG);
-    puts("There are the following animals on the scene: ");
+    puts(_("There are the following animals on the scene: "));
     for (Node *an = animals.head; an != NULL; an = an->next)
         printf("%d:%s, ", an->animal.id, an->animal.type.name);
     puts("\n");
