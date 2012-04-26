@@ -12,3 +12,6 @@ animals.o: animals.c animals.h
 
 mylibrary.o: mylibrary.c mylibrary.h
 	$(CC) $(CFLAGS) mylibrary.c
+
+clean: 
+	rm -fr *\.o hunt
