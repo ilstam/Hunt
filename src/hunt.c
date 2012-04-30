@@ -31,7 +31,7 @@
 #include "info.h"
 
 #define PACKAGE                "hunt"
-#define LOCALEDIR              "/usr/share/locale"
+#define LOCALEDIR              "/usr/local/share/locale"
 #define _(string)              gettext(string)
 
 #define MAX_INPUT              255
@@ -145,7 +145,7 @@ void buy(CommandType command, Player *player, WeaponType weaptable[])
         !strcmp(command.params[0], "weapon")) {
 
         if (command.params[1] == NULL) {
-            puts(_("Be more specific."));
+            puts(_("Please be more specific."));
             return;
         }
 
@@ -387,27 +387,27 @@ void parser(char *input, CommandType *command, CommandType cmdtable[])
 int main(void)
 {
     AnimalType animtable[MAX_ANIMALTYPES] = {
-        // .id            .name        .attack .defense .speed .value
-        {ANIM_LION,      _("lion"),      100,      90,     80,   100},
-        {ANIM_TIGER,     _("tiger"),      95,      80,     85,    90},
-        {ANIM_CHEETAH,   _("cheetah"),    95,      80,     85,    90},
-        {ANIM_WOLF,      _("wolf"),       90,      70,     80,    80},
-        {ANIM_BEAR,      _("bear"),       75,      75,     50,    75},
-        {ANIM_ELEPHANT,  _("elephant"),   70,      80,     45,    75},
-        {ANIM_BOAR,      _("boar"),       90,      55,     55,    70},
-        {ANIM_ALLIGATOR, _("alligator"),  65,      50,     30,    60},
-        {ANIM_PYTHON,    _("python"),     60,      55,     40,    60},
-        {ANIM_FOX,       _("fox"),        55,      65,     65,    60},
-        {ANIM_DEER,      _("deer"),       50,      70,     90,    60},
-        {ANIM_ZEBRA,     _("zebra"),      50,      65,     80,    55}
+        // .id           .name      .attack .defense .speed .value
+        {ANIM_LION,      "lion",      100,      90,     80,   100},
+        {ANIM_TIGER,     "tiger",      95,      80,     85,    90},
+        {ANIM_CHEETAH,   "cheetah",    95,      80,     85,    90},
+        {ANIM_WOLF,      "wolf",       90,      70,     80,    80},
+        {ANIM_BEAR,      "bear",       75,      75,     50,    75},
+        {ANIM_ELEPHANT,  "elephant",   70,      80,     45,    75},
+        {ANIM_BOAR,      "boar",       90,      55,     55,    70},
+        {ANIM_ALLIGATOR, "alligator",  65,      50,     30,    60},
+        {ANIM_PYTHON,    "python",     60,      55,     40,    60},
+        {ANIM_FOX,       "fox",        55,      65,     65,    60},
+        {ANIM_DEER,      "deer",       50,      70,     90,    60},
+        {ANIM_ZEBRA,     "zebra",      50,      65,     80,    55}
     };
 
     WeaponType weaptable[MAX_WEAPONS] = {
-        // .id             .name     .attack  .distance .value
-        {WEAP_SHOTGUN,  _("shotgun"),  100,      100,    1000},
-        {WEAP_RIFLE,    _("rifle"),     80,       80,     500},
-        {WEAP_HANDGUN,  _("handgun"),   60,       50,     100},
-        {WEAP_SLING,    _("sling"),     50,       30,       0}
+        // .id          .name      .attack  .distance .value
+        {WEAP_SHOTGUN,  "shotgun",   100,      100,    1000},
+        {WEAP_RIFLE,    "rifle",      80,       80,     500},
+        {WEAP_HANDGUN,  "handgun",    60,       50,     100},
+        {WEAP_SLING,    "sling",      50,       30,       0}
     };
 
     CommandType cmdtable[MAX_COMMANDS] = {
@@ -535,13 +535,13 @@ int main(void)
 
         if (animals.len < 3)
             if (animals_addanimal(&animals, animtable))
-                puts(_("\nBe careful! Α new animal appeared from nowhere!"));
+                puts(_("\nBe careful! A new animal appeared from nowhere!"));
         // at the beggining add a new animal after each x years
         // after 50 rounds add a new animal after each x-2 years
         if ((rounds > 50 && !(rounds % ADD_ANIM_ROUNDS - 2)) ||
             !(rounds % ADD_ANIM_ROUNDS))
             if (animals_addanimal(&animals, animtable))
-                puts(_("\nBe careful! Α new animal appeared from nowhere!"));
+                puts(_("\nBe careful! A new animal appeared from nowhere!"));
     }
 
 exit_success:
