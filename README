@@ -1,17 +1,26 @@
 HUNT
 -----
-Author: Ilias Stamatis <stamatis.iliass@gmail.com>
-Version: 0.01
 
-Description
-------------
+About
+------
 Hunt is small text adventure game written for fun.
 The program uses its own command line which recognizes specific commands.
 The adventure takes place in a jungle and your target is to capture as many animals as you can.
 For each animal you capture, you earn gold and gain some xp.
 You can buy bullets, better weapons and drugs in case you get hurt by an animal.
 
+
+Requirements
+------------
+The only prerequisite is GNU gettext.
+You also need, of course, a C compiler and the Make tool.
+
+
 Installation
 -------------
-Just type make to compile the program.
+Installing Hunt is done by the following commands:
+$ make
+$ make install  #(as root)
 
+You can remove the program binaries and object files from the source code
+directory by typing `make clean'.
