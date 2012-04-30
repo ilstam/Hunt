@@ -5,7 +5,7 @@
 #define _(string)       gettext(string)
 
 #define APP_NAME        "Hunt"
-#define APP_VERSION     "0.01"
+#define APP_VERSION     "0.2"
 #define AUTHOR          "Ilias Stamatis"
 #define AUTHOR_MAIL     "stamatis.iliass@gmail.com"
 
