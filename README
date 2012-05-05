@@ -12,7 +12,7 @@ You can buy bullets, better weapons and drugs in case you get hurt by an animal.
 
 Requirements
 ------------
-The only prerequisite is GNU gettext.
+The only prerequisites are GNU readline library and GNU gettext translation system.
 You also need, of course, a C compiler and the Make tool.
 
 
