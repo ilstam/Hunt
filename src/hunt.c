@@ -25,6 +25,9 @@
 #include <locale.h>    // setlocale()
 #include <libintl.h>   // gettext(), bindtextdomain(), textdomain()
 
+#include <readline/readline.h>
+#include <readline/history.h>
+
 #include "mylibrary.h" // s_tolower(), s_tokenize()
 #include "animals.h"   // animals_*()
 #include "weapons.h"
@@ -47,6 +50,15 @@
 #define MAX_CMD_PARAMS           2
 
 
+typedef struct {
+    int         health; // 0 to 100
+    int         xp;
+    int         gold;
+    int         bullets;
+    WeaponType  weapon;
+    AniTypeId   capedanimals[MAX_ANIMALTYPES]; // captured animals
+} Player;
+
 typedef enum {
     CMD_INVALID = -1,
     CMD_SHOOT,
@@ -65,14 +77,64 @@ typedef struct {
     char        *params[MAX_CMD_PARAMS];
 } CommandType;
 
-typedef struct {
-    int         health; // 0 to 100
-    int         xp;
-    int         gold;
-    int         bullets;
-    WeaponType  weapon;
-    AniTypeId   capedanimals[MAX_ANIMALTYPES]; // captured animals
-} Player;
+CommandType cmdtable[MAX_COMMANDS+1] = {
+    // .id             .aliases     .nparams     .params
+    {CMD_SHOOT,    {"shoot",  NULL},    1,    {NULL, NULL}},
+    {CMD_LOOK,     {"look",   NULL},    0,    {NULL, NULL}},
+    {CMD_BUY,      {"buy",    NULL},    2,    {NULL, NULL}},
+    {CMD_STATUS,   {"status", NULL},    0,    {NULL, NULL}},
+    {CMD_HELP,     {"help",    "?"},    1,    {NULL, NULL}},
+    {CMD_EXIT,     {"exit", "quit"},    0,    {NULL, NULL}},
+    {CMD_INVALID,  {NULL, NULL},        0,    {NULL, NULL}}
+};
+
+
+/***********************************************************************
+ *                Interface to Readline Completion
+ *
+ * The following functions are used for commands completion and they're
+ * part of the API of the GNU Readline Library.
+ *
+ * For documentation, see: http://web.mit.edu/gnu/doc/html/rlman_2.html
+ ***********************************************************************/
+
+extern char *xmalloc();
+char **completion_matches(char *text, CPFunction *entry_func);
+
+char *dupstr(char *s)
+{
+    char *r;
+
+    r = xmalloc(strlen(s) + 1);
+    strcpy(r, s);
+    return r;
+}
+
+char *command_generator(char *text, int state)
+{
+    static int list_index, len;
+    char *name = NULL;
+
+    if (!state) {
+            list_index = 0;
+            len = strlen(text);
+        }
+
+    while ((name = cmdtable[list_index].aliases[0])) {
+            list_index++;
+            if (strncmp(name, text, len) == 0)
+                return dupstr(name);
+        }
+
+    return (char *)NULL;
+}
+
+char **my_completion(char *text)
+{
+    return completion_matches(text, command_generator);
+}
+
+// end of the readline related functions
 
 
 /********************************************************************
@@ -410,23 +472,17 @@ int main(void)
         {WEAP_SLING,    "sling",      50,       30,       0}
     };
 
-    CommandType cmdtable[MAX_COMMANDS] = {
-        // .id             .aliases     .nparams     .params
-        {CMD_SHOOT,    {"shoot",  NULL},    1,    {NULL, NULL}},
-        {CMD_LOOK,     {"look",   NULL},    0,    {NULL, NULL}},
-        {CMD_BUY,      {"buy",    NULL},    2,    {NULL, NULL}},
-        {CMD_STATUS,   {"status", NULL},    0,    {NULL, NULL}},
-        {CMD_HELP,     {"help",    "?"},    1,    {NULL, NULL}},
-        {CMD_EXIT,     {"exit", "quit"},    0,    {NULL, NULL}},
-    };
-
                // .health   .xp  .gold .bullets .weapon  .capendanimals
     Player player = {100,    0,    100,   5,  weaptable[3],   {0}};
     List animals = {NULL, NULL, 0, 0};
 
     char input[MAX_INPUT+1];
+    char *readline_input;
     int rounds = 0;
     CommandType command = {CMD_INVALID, {NULL, NULL}, 0, {NULL, NULL}};
+
+    // bind our completer
+    rl_attempted_completion_function = (CPPFunction *)my_completion;
 
     // init pseudo-random seed
     srand((unsigned) time(NULL));
@@ -482,8 +538,16 @@ int main(void)
 
     // internal command line loop
     for (;;) {
-        printf(">>> ");
-        fgets(input, sizeof(input), stdin);
+        if ((readline_input = readline(">>> ")) == NULL) {
+            free(readline_input);
+            exit_msg(player, animtable, rounds);
+            goto exit_success;
+        }
+        if (*readline_input)
+            add_history(readline_input);
+
+        strcpy(input, readline_input);
+        free(readline_input);
         parser(input, &command, cmdtable);
 
         switch (command.id) {
