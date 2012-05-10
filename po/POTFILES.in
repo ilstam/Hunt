@@ -1,0 +1,5 @@
+# List of source files containing translatable strings.
+
+src/hunt.c
+src/animals.c
+src/mylibrary.c
