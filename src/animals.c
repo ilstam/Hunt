@@ -112,20 +112,20 @@ SceneAnimal *animals_find(Node *list, int id)
 void animals_look(List list)
 {
     if (!list.len) {
-        puts(_("There are no animals on the scene."));
+        puts("There are no animals on the scene.");
         return;
     }
 
-    printf(_("The following %d animals are on the scene now: \n\n"), list.len);
+    printf("The following %d animals are on the scene now: \n\n", list.len);
     for (Node *an = list.head; an != NULL; an = an->next) {
-        printf(_("%d:%s           \t(hlth=%d att=%d def=%d spd=%d dist=%d mood="),
+        printf("%d:%s           \t(hlth=%d att=%d def=%d spd=%d dist=%d mood=",
             an->animal.id, an->animal.type.name,
             an->animal.health, an->animal.type.attack,
             an->animal.type.defense, an->animal.type.speed, an->animal.distance);
         switch (an->animal.mood) {
-            case ANIM_SCARED: puts(_("scared)")); break;
-            case ANIM_NEUTRAL: puts(_("neutral)")); break;
-            case ANIM_AGGRESSIVE: puts(_("aggressive)")); break;
+            case ANIM_SCARED: puts("scared)"); break;
+            case ANIM_NEUTRAL: puts("neutral)"); break;
+            case ANIM_AGGRESSIVE: puts("aggressive)"); break;
             default: break;
         }
     }
@@ -133,7 +133,7 @@ void animals_look(List list)
 
 int animals_attack(SceneAnimal *animal)
 {
-    printf(_("\nBEWARE! An angry %s attacks you! Oh, that hurts!\n"),
+    printf("\nBEWARE! An angry %s attacks you! Oh, that hurts!\n",
            animal->type.name);
     return animal->type.attack * (1.0/5.0) + \
            ((rand() % 5) + 1) - ((rand() % 5) + 1);
@@ -152,3 +152,4 @@ void animals_goaway(SceneAnimal *animal)
     animal->distance += animal->type.speed * (1.0/6.0);
     animal->distance += ((rand() % 5) + 1) - ((rand() % 5) + 1);
 }
+

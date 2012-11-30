@@ -5,9 +5,6 @@
 #include <stdlib.h>  // calloc(), free(), rand()
 #include <string.h>  // memcopy()
 #include <stdbool.h> // bool, true, false
-#include <libintl.h> // gettext()
-
-#define _(string)              gettext(string)
 
 #define STARTING_ANIM_HEALTH   100
 #define MAX_ANIM_DISTANCE      100
@@ -122,3 +119,4 @@ void animals_goclose(SceneAnimal *animal);
 void animals_goaway(SceneAnimal *animal);
 
 #endif
+

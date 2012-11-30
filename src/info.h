@@ -1,23 +1,20 @@
 #ifndef INFO_H
 #define INFO_H
 
-#include <libintl.h> // gettext()
-#define _(string)       gettext(string)
-
 #define APP_NAME        "Hunt"
-#define APP_VERSION     "0.3"
+#define APP_VERSION     "0.3.1"
 #define AUTHOR          "Ilias Stamatis"
 #define AUTHOR_MAIL     "stamatis.iliass@gmail.com"
 
-#define START_MENU                         _(\
+#define START_MENU                           \
     "              %s\n"                     \
     "    ------------------------\n\n"       \
     "      S  Start the game\n\n"            \
     "      C  Show credits\n\n"              \
     "      I  Info about playing\n\n"        \
-    "      Q  Quit\n\n")
+    "      Q  Quit\n\n"                      \
 
-#define CREDITS                                                            _(\
+#define CREDITS                                                              \
     "Name: %s\n"                                                             \
     "Version: %s\n\n"                                                        \
     "Copyright (C) 2012 %s <%s>\n\n"                                         \
@@ -26,9 +23,9 @@
     "the Free Software Foundation, either version 3 of the License, or\n"    \
     "(at your option) any later version.\n\n"                                \
     "Written by %s.\n\n"                                                     \
-    "Special thanks to migf1.\n\n")
+    "Special thanks to migf1.\n\n"                                           \
 
-#define INFO_ABOUT_PLAYING                                               _(\
+#define INFO_ABOUT_PLAYING                                                 \
     "Info about playing\n"                                                 \
     "-------------------\n"                                                \
     "Commands consist of sentences with one, two or three words.\n"        \
@@ -39,9 +36,9 @@
     "For each animal you capture you earn gold and gain some xp.\n"        \
     "You can buy bullets, better weapons and drugs in case you get hurt "  \
     "by an animal.\n\n"                                                    \
-    "When your health drops below 0, the game is over.\n")
+    "When your health drops below 0, the game is over.\n"                  \
 
-#define WELCOME_MSG                                                      _(\
+#define WELCOME_MSG                                                        \
     "*     *   *     *   **    *   *******\n"                              \
     "*     *   *     *   * *   *      *\n"                                 \
     "*******   *     *   *  *  *      *\n"                                 \
@@ -51,9 +48,9 @@
     "It's a happy sunny day in the forest.\n"                              \
     "A bright sun is up in the sky and birds chirping in the air.\n"       \
     "There are trees, bushes, flowers, grass, and fruits all around you."  \
-    "\n\nWhat a wonderful place!\nBut beware! You're not alone!\n")
+    "\n\nWhat a wonderful place!\nBut beware! You're not alone!\n"
 
-#define HELP_MSG                                                                       _(\
+#define HELP_MSG                                                                         \
     "Only the following commands are understood by the program:\n\n"                     \
     " Command             Description\n"                                                 \
     "-------------------------------------------------------------------------\n"        \
@@ -65,6 +62,7 @@
     " help, ? <table>     if called without parameter, prints this help text\n"          \
     "                        you can user either \"help animals\" or \"help weapons\"\n" \
     "                        to print a table of all animals or weapons\n"               \
-    " exit, quit          exits the program\n")
+    " exit, quit          exits the program\n"
 
 #endif
+

@@ -22,20 +22,11 @@
 #include <string.h>    // strcmp(), memcpy()
 #include <stdbool.h>   // bool, true, false
 #include <time.h>      // time()
-#include <locale.h>    // setlocale()
-#include <libintl.h>   // gettext(), bindtextdomain(), textdomain()
-
-#include <readline/readline.h>
-#include <readline/history.h>
 
 #include "mylibrary.h" // s_tolower(), s_tokenize()
 #include "animals.h"   // animals_*()
 #include "weapons.h"
 #include "info.h"
-
-#define PACKAGE                "hunt"
-#define LOCALEDIR              "/usr/local/share/locale"
-#define _(string)              gettext(string)
 
 #define MAX_INPUT              255
 
@@ -49,15 +40,6 @@
 #define MAX_CMD_ALIASES          2
 #define MAX_CMD_PARAMS           2
 
-
-typedef struct {
-    int         health; // 0 to 100
-    int         xp;
-    int         gold;
-    int         bullets;
-    WeaponType  weapon;
-    AniTypeId   capedanimals[MAX_ANIMALTYPES]; // captured animals
-} Player;
 
 typedef enum {
     CMD_INVALID = -1,
@@ -77,64 +59,14 @@ typedef struct {
     char        *params[MAX_CMD_PARAMS];
 } CommandType;
 
-CommandType cmdtable[MAX_COMMANDS+1] = {
-    // .id             .aliases     .nparams     .params
-    {CMD_SHOOT,    {"shoot",  NULL},    1,    {NULL, NULL}},
-    {CMD_LOOK,     {"look",   NULL},    0,    {NULL, NULL}},
-    {CMD_BUY,      {"buy",    NULL},    2,    {NULL, NULL}},
-    {CMD_STATUS,   {"status", NULL},    0,    {NULL, NULL}},
-    {CMD_HELP,     {"help",    "?"},    1,    {NULL, NULL}},
-    {CMD_EXIT,     {"exit", "quit"},    0,    {NULL, NULL}},
-    {CMD_INVALID,  {NULL, NULL},        0,    {NULL, NULL}}
-};
-
-
-/***********************************************************************
- *                Interface to Readline Completion
- *
- * The following functions are used for commands completion and they're
- * part of the API of the GNU Readline Library.
- *
- * For documentation, see: http://web.mit.edu/gnu/doc/html/rlman_2.html
- ***********************************************************************/
-
-extern char *xmalloc();
-char **completion_matches(char *text, CPFunction *entry_func);
-
-char *dupstr(char *s)
-{
-    char *r;
-
-    r = xmalloc(strlen(s) + 1);
-    strcpy(r, s);
-    return r;
-}
-
-char *command_generator(char *text, int state)
-{
-    static int list_index, len;
-    char *name = NULL;
-
-    if (!state) {
-            list_index = 0;
-            len = strlen(text);
-        }
-
-    while ((name = cmdtable[list_index].aliases[0])) {
-            list_index++;
-            if (strncmp(name, text, len) == 0)
-                return dupstr(name);
-        }
-
-    return (char *)NULL;
-}
-
-char **my_completion(char *text)
-{
-    return completion_matches(text, command_generator);
-}
-
-// end of the readline related functions
+typedef struct {
+    int         health; // 0 to 100
+    int         xp;
+    int         gold;
+    int         bullets;
+    WeaponType  weapon;
+    AniTypeId   capedanimals[MAX_ANIMALTYPES]; // captured animals
+} Player;
 
 
 /********************************************************************
@@ -147,23 +79,23 @@ bool shoot(CommandType command, List *list, Player *player)
     int id, damage;
 
     if (command.params[0] == NULL) {
-        puts(_("Please be more specific."));
+        puts("Be more specific.");
         return false;
     }
 
     if (command.params[command.nparams] != NULL) {
-        puts(_("You can't shoot two animals at once."));
+        puts("You can't shoot two animals at once.");
         return false;
     }
 
     id = strtol(command.params[0], NULL, 10);
     if (id == 0 || (animal = animals_find(list->head, id)) == NULL) {
-        printf(_("%s is not a valid animal id\n"), command.params[0]);
+        printf("%s is not a valid animal id\n", command.params[0]);
         return false;
     }
 
     if (!player->bullets) {
-        puts(_("I have no bullets! I can't shoot!"));
+        puts("I have no bullets! I can't shoot!");
         return false;
     }
 
@@ -178,7 +110,7 @@ bool shoot(CommandType command, List *list, Player *player)
     animal->health -= damage;
 
     if (animal->health <= 0) {
-        printf(_("The %s is dead! You earn %d gold!\n"),
+        printf("The %s is dead! You earn %d gold!\n",
             animal->type.name, animal->type.value);
         player->gold += animal->type.value;
         player->xp   += animal->type.value;
@@ -198,7 +130,7 @@ void buy(CommandType command, Player *player, WeaponType weaptable[])
     bool found;
 
     if (command.params[0] == NULL) {
-        puts(_("What do you want to buy?"));
+        puts("What do you want to buy?");
         return;
     }
 
@@ -207,7 +139,7 @@ void buy(CommandType command, Player *player, WeaponType weaptable[])
         !strcmp(command.params[0], "weapon")) {
 
         if (command.params[1] == NULL) {
-            puts(_("Please be more specific."));
+            puts("Please be more specific.");
             return;
         }
 
@@ -218,7 +150,7 @@ void buy(CommandType command, Player *player, WeaponType weaptable[])
                     break;
                 }
             if (!found) {
-                puts(_("There is no weapon with such name."));
+                puts("There is no weapon with such name.");
                 return;
             }
             cost = weaptable[i].value;
@@ -226,27 +158,27 @@ void buy(CommandType command, Player *player, WeaponType weaptable[])
         else {
             num = strtol(command.params[1], NULL, 10);
             if (num <= 0) {
-                printf(_("%s is not a valid positive integer.\n"), command.params[1]);
+                printf("%s is not a valid positive integer.\n", command.params[1]);
                 return;
             }
             cost = !strcmp(command.params[0], "bullets") ? BULLET_COST:DRUG_COST;
             cost *= num;
         }
 
-        printf(_("You need %d gold in order to buy this stuff.\n"), cost);
+        printf("You need %d gold in order to buy this stuff.\n", cost);
         if (player->gold < cost) {
-            puts(_("Sorry, you don't have enough gold."));
+            puts("Sorry, you don't have enough gold.");
             return;
         }
 
-        printf(_("Are you sure that you want to proceed? (y/n) "));
+        printf("Are you sure that you want to proceed? (y/n) ");
         fgets(input, sizeof(input), stdin);
         s_tokenize(input, tokens, 2, " \n");
 
         if (tokens[0] == NULL || tokens[1] != NULL ||
                 (strcmp(s_tolower(tokens[0]), "y") &&
                 strcmp(s_tolower(tokens[0]), "yes"))) {
-            puts(_("canceled"));
+            puts("canceled");
             return;
             }
 
@@ -264,10 +196,10 @@ void buy(CommandType command, Player *player, WeaponType weaptable[])
             player->gold -= cost;
             memcpy(&player->weapon, &weaptable[i], sizeof(WeaponType));
         }
-        puts(_("Done!"));
+        puts("Done!");
         return;
     }
-    printf(_("You can't buy %s.\n"), command.params[0]);
+    printf("You can't buy %s.\n", command.params[0]);
 }
 
 /********************************************************************
@@ -275,8 +207,8 @@ void buy(CommandType command, Player *player, WeaponType weaptable[])
  ********************************************************************/
 void player_status(Player player)
 {
-    printf(_("Health: %d, XP: %d, Gold: %d\n"
-           "Weapon: %s (attack=%d, distance=%d), Bullets: %d\n"),
+    printf("Health: %d, XP: %d, Gold: %d\n"
+           "Weapon: %s (attack=%d, distance=%d), Bullets: %d\n",
            player.health, player.xp, player.gold, player.weapon.name,
            player.weapon.attack, player.weapon.distance, player.bullets);
 }
@@ -296,7 +228,7 @@ void help(CommandType command, AnimalType animtable[], WeaponType weaptable[])
     register int i;
 
     if (! strcmp(command.params[0], "animals")) {
-        puts(_("name    \tatt\tdef\tspd\tval"));
+        puts("name    \tatt\tdef\tspd\tval");
         puts("--------------------------------------------");
         for (i = 0; i < MAX_ANIMALTYPES; i++)
             printf("%s     \t%3d\t%3d\t%3d\t%3d\n", animtable[i].name,
@@ -305,7 +237,7 @@ void help(CommandType command, AnimalType animtable[], WeaponType weaptable[])
     }
 
     else if (! strcmp(command.params[0], "weapons")) {
-        puts(_("name    \tatt\tdist\t val"));
+        puts("name    \tatt\tdist\t val");
         puts("-------------------------------------");
         for (i = 0; i < MAX_WEAPONS; i++)
             printf("%s     \t%3d\t%3d\t%4d\n", weaptable[i].name,
@@ -313,7 +245,7 @@ void help(CommandType command, AnimalType animtable[], WeaponType weaptable[])
     }
 
     else
-        printf(_("%s: invalid parameter\n"), command.params[0]);
+        printf("%s: invalid parameter\n", command.params[0]);
 }
 
 /********************************************************************
@@ -321,18 +253,18 @@ void help(CommandType command, AnimalType animtable[], WeaponType weaptable[])
  ********************************************************************/
 void exit_msg(Player player, AnimalType animtable[], int rounds)
 {
-    printf(_("\nThis adventure is over.\nYou've made %d xp points and died "
-           "holding a %s after %d rounds.\n"),
+    printf("\nThis adventure is over.\nYou've made %d xp points and died "
+           "holding a %s after %d rounds.\n",
            player.xp, player.weapon.name, rounds);
 
     for (register int y = 0; y < MAX_ANIMALTYPES; y++)
         if (player.capedanimals[y] > 0)
             goto print_capedanimals;
-    puts(_("\nYou haven't captured any animals.\n"));
+    puts("\nYou haven't captured any animals.\n");
     return;
 
 print_capedanimals:
-    printf(_("\nYou have also captured: "));
+    printf("\nYou have also captured: ");
     for (register int i = 0; i < MAX_ANIMALTYPES; i++)
         if (player.capedanimals[i] > 0) {
             printf("%d %s", player.capedanimals[i], animtable[i].name);
@@ -449,27 +381,37 @@ void parser(char *input, CommandType *command, CommandType cmdtable[])
 int main(void)
 {
     AnimalType animtable[MAX_ANIMALTYPES] = {
-        // .id           .name      .attack .defense .speed .value
-        {ANIM_LION,      "lion",      100,      90,     80,   100},
-        {ANIM_TIGER,     "tiger",      95,      80,     85,    90},
-        {ANIM_CHEETAH,   "cheetah",    95,      80,     85,    90},
-        {ANIM_WOLF,      "wolf",       90,      70,     80,    80},
-        {ANIM_BEAR,      "bear",       75,      75,     50,    75},
-        {ANIM_ELEPHANT,  "elephant",   70,      80,     45,    75},
-        {ANIM_BOAR,      "boar",       90,      55,     55,    70},
-        {ANIM_ALLIGATOR, "alligator",  65,      50,     30,    60},
-        {ANIM_PYTHON,    "python",     60,      55,     40,    60},
-        {ANIM_FOX,       "fox",        55,      65,     65,    60},
-        {ANIM_DEER,      "deer",       50,      70,     90,    60},
-        {ANIM_ZEBRA,     "zebra",      50,      65,     80,    55}
+        // .id            .name       .attack .defense .speed  .value
+        {ANIM_LION,      "lion",        100,      90,     80,   100},
+        {ANIM_TIGER,     "tiger",        95,      80,     85,    90},
+        {ANIM_CHEETAH,   "cheetah",      95,      80,     85,    90},
+        {ANIM_WOLF,      "wolf",         90,      70,     80,    80},
+        {ANIM_BEAR,      "bear",         75,      75,     50,    75},
+        {ANIM_ELEPHANT,  "elephant",     70,      80,     45,    75},
+        {ANIM_BOAR,      "boar",         90,      55,     55,    70},
+        {ANIM_ALLIGATOR, "alligator",    65,      50,     30,    60},
+        {ANIM_PYTHON,    "python",       60,      55,     40,    60},
+        {ANIM_FOX,       "fox",          55,      65,     65,    60},
+        {ANIM_DEER,      "deer",         50,      70,     90,    60},
+        {ANIM_ZEBRA,     "zebra",        50,      65,     80,    55}
     };
 
     WeaponType weaptable[MAX_WEAPONS] = {
-        // .id          .name      .attack  .distance .value
-        {WEAP_SHOTGUN,  "shotgun",   100,      100,    1000},
-        {WEAP_RIFLE,    "rifle",      80,       80,     500},
-        {WEAP_HANDGUN,  "handgun",    60,       50,     100},
-        {WEAP_SLING,    "sling",      50,       30,       0}
+        // .id             .name    .attack  .distance .value
+        {WEAP_SHOTGUN,   "shotgun",   100,      100,    1000},
+        {WEAP_RIFLE,     "rifle",      80,       80,     500},
+        {WEAP_HANDGUN,   "handgun",    60,       50,     100},
+        {WEAP_SLING,     "sling",      50,       30,       0}
+    };
+
+    CommandType cmdtable[MAX_COMMANDS] = {
+        // .id             .aliases     .nparams     .params
+        {CMD_SHOOT,    {"shoot",  NULL},    1,    {NULL, NULL}},
+        {CMD_LOOK,     {"look",   NULL},    0,    {NULL, NULL}},
+        {CMD_BUY,      {"buy",    NULL},    2,    {NULL, NULL}},
+        {CMD_STATUS,   {"status", NULL},    0,    {NULL, NULL}},
+        {CMD_HELP,     {"help",    "?"},    1,    {NULL, NULL}},
+        {CMD_EXIT,     {"exit", "quit"},    0,    {NULL, NULL}},
     };
 
                // .health   .xp  .gold .bullets .weapon  .capendanimals
@@ -477,20 +419,12 @@ int main(void)
     List animals = {NULL, NULL, 0, 0};
 
     char input[MAX_INPUT+1];
-    char *readline_input;
     int rounds = 0;
     CommandType command = {CMD_INVALID, {NULL, NULL}, 0, {NULL, NULL}};
-
-    // bind our completer
-    rl_attempted_completion_function = (CPPFunction *)my_completion;
 
     // init pseudo-random seed
     srand((unsigned) time(NULL));
 
-    // init the gettext translation system
-    setlocale(LC_ALL, "");
-    bindtextdomain(PACKAGE, LOCALEDIR);
-    textdomain(PACKAGE);
 
     // start menu
     for (;;) {
@@ -511,13 +445,13 @@ int main(void)
             system(SYSTEM_CLEAR);
             printf(CREDITS, APP_NAME, APP_VERSION, AUTHOR, AUTHOR_MAIL,
                    APP_NAME, AUTHOR);
-            puts(_("[Press Enter.]"));
+            puts("[Press Enter.]");
             fgets(input, sizeof(input), stdin);
         }
         else if (!strcmp(tokens[0], "i")) {
             system(SYSTEM_CLEAR);
             puts(INFO_ABOUT_PLAYING);
-            puts(_("[Press Enter.]"));
+            puts("[Press Enter.]");
             fgets(input, sizeof(input), stdin);
         }
         else if (!strcmp(tokens[0], "q"))
@@ -531,23 +465,15 @@ int main(void)
 
     system(SYSTEM_CLEAR);
     puts(WELCOME_MSG);
-    puts(_("There are the following animals on the scene: "));
+    puts("There are the following animals on the scene: ");
     for (Node *an = animals.head; an != NULL; an = an->next)
         printf("%d:%s, ", an->animal.id, an->animal.type.name);
     puts("\n");
 
     // internal command line loop
     for (;;) {
-        if ((readline_input = readline(">>> ")) == NULL) {
-            free(readline_input);
-            exit_msg(player, animtable, rounds);
-            goto exit_success;
-        }
-        if (*readline_input)
-            add_history(readline_input);
-
-        strcpy(input, readline_input);
-        free(readline_input);
+        printf(">>> ");
+        fgets(input, sizeof(input), stdin);
         parser(input, &command, cmdtable);
 
         switch (command.id) {
@@ -573,7 +499,7 @@ int main(void)
                 goto exit_success;
                 break;
             case CMD_INVALID: default:
-                puts(_("Unknown command"));
+                puts("Unknown command");
                 break;
         }
         continue;
@@ -585,30 +511,31 @@ int main(void)
             animal_move(&player, &an->animal);
             if (an->animal.distance > 100) {
                 animals_kill(&animals, an->animal.id);
-                puts(_("\nOops! A terrified animal left the scene."));
+                puts("\nOops! A terrified animal left the scene.");
             }
             if (player.health <= 0) {
-                puts(_("\nAfter many hard fights you're finally dead!"));
+                puts("\nAfter many hard fights you're finally dead!");
                 exit_msg(player, animtable, rounds);
                 goto exit_success;
             }
         }
         if (player.health < 40)
-            puts(_("\nYou are seriously hurt. You should really get some drugs."));
+            puts("\nYou are seriously hurt. You should really get some drugs.");
 
 
         if (animals.len < 3)
             if (animals_addanimal(&animals, animtable))
-                puts(_("\nBe careful! A new animal appeared from nowhere!"));
+                puts("\nBe careful! A new animal appeared from nowhere!");
         // at the beggining add a new animal after each x years
         // after 50 rounds add a new animal after each x-2 years
         if ((rounds > 50 && !(rounds % ADD_ANIM_ROUNDS - 2)) ||
             !(rounds % ADD_ANIM_ROUNDS))
             if (animals_addanimal(&animals, animtable))
-                puts(_("\nBe careful! A new animal appeared from nowhere!"));
+                puts("\nBe careful! A new animal appeared from nowhere!");
     }
 
 exit_success:
     animals_killall(animals.head);
     exit(EXIT_SUCCESS);
 }
+
