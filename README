@@ -1,26 +1,19 @@
 HUNT
------
+====
 
-About
-------
-Hunt is small text adventure game written for fun.
-The program uses its own command line which recognizes specific commands.
-The adventure takes place in a jungle and your target is to capture as many animals as you can.
-For each animal you capture, you earn gold and gain some xp.
-You can buy bullets, better weapons and drugs in case you get hurt by an animal.
-
+Hunt is small text adventure game written for fun. It uses its own command
+line which recognizes specific commands. The adventure takes place in a jungle
+and your target is to capture as many animals as you can. For each animal you
+capture, you earn gold and gain some xp. You can buy bullets, better weapons
+and drugs in case you get hurt by an animal.
 
 Requirements
 ------------
-The only prerequisites are GNU readline library and GNU gettext translation system.
-You also need, of course, a C compiler and the Make tool.
-
+You only need a C compiler and the Make tool.
 
 Installation
 -------------
-Installing Hunt is done by the following commands:
-$ make
-$ make install  #(as root)
+Just type make to compile the program.
 
 You can remove the program binaries and object files from the source code
 directory by typing `make clean'.
