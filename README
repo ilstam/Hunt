@@ -1,11 +1,11 @@
 HUNT
 ====
 
-Hunt is small text adventure game written for fun. It uses its own command
-line which recognizes specific commands. The adventure takes place in a jungle
-and your target is to capture as many animals as you can. For each animal you
-capture, you earn gold and gain some xp. You can buy bullets, better weapons
-and drugs in case you get hurt by an animal.
+Hunt is small text adventure game written in standard C99 for fun. It uses its
+own command line which recognizes specific commands. The adventure takes place
+in a jungle and your target is to capture as many animals as you can. For each
+animal you capture, you earn gold and gain some xp. You can buy bullets, better
+weapons and drugs in case you get hurt by an animal.
 
 Requirements
 ------------
