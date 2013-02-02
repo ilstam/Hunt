@@ -1,21 +1,22 @@
 #ifndef WEAPONS_H
 #define WEAPONS_H
 
-typedef enum {
-    WEAP_SLING = 0,
-    WEAP_HANDGUN,
-    WEAP_RIFLE,
-    WEAP_SHOTGUN,
-    MAX_WEAPONS  // their total count
-} WeapTypeId;
+enum weaponid {
+        WEAP_INVALID = -1,
+        WEAP_SLING,
+        WEAP_HANDGUN,
+        WEAP_RIFLE,
+        WEAP_SHOTGUN,
+        MAX_WEAPONS /* their total count */
+};
 
-typedef struct {
-    WeapTypeId  id;
-    char       *name;
-    int         attack;   // 0 to 100
-    int         distance; // distance to which is able to shoot - 0 to 100
-    int         value;    // purchase price
-} WeaponType;
+struct weapon {
+        enum weaponid id;
+        char *name;
+        int   attack;  /* 0 to 100 */
+        int   range;   /* distance to which is able to shoot - 0 to 100 */
+        int   value;   /* purchase price */
+};
 
 #endif
 

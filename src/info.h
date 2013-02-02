@@ -2,7 +2,7 @@
 #define INFO_H
 
 #define APP_NAME        "Hunt"
-#define APP_VERSION     "0.3.1"
+#define APP_VERSION     "0.4.0"
 #define AUTHOR          "Ilias Stamatis"
 #define AUTHOR_MAIL     "stamatis.iliass@gmail.com"
 
@@ -17,7 +17,7 @@
 #define CREDITS                                                              \
     "Name: %s\n"                                                             \
     "Version: %s\n\n"                                                        \
-    "Copyright (C) 2012 %s <%s>\n\n"                                         \
+    "Copyright (C) 2012-2013 %s <%s>\n\n"                                    \
     "%s is free software: you can redistribute it and/or modify\n"           \
     "it under the terms of the GNU General Public License as published by\n" \
     "the Free Software Foundation, either version 3 of the License, or\n"    \
@@ -54,15 +54,15 @@
     "Only the following commands are understood by the program:\n\n"                     \
     " Command             Description\n"                                                 \
     "-------------------------------------------------------------------------\n"        \
-    " shoot <id>          shoots the animal with the corresponding id\n"                 \
-    " look                displays info about all animals on the scene\n"                \
-    " status              displays info about player\n"                                  \
-    " buy <type> <spef>   buys the requested stuff\n"                                    \
+    " shoot, sh <id>      shoot animal with the corresponding id\n"                      \
+    " look, lk            display info about all animals on the scene\n"                 \
+    " status, st          display info about player\n"                                   \
+    " buy <type> <spef>   buy the requested stuff\n"                                     \
     "                        examples: buy bullets 5, buy drugs 1, buy weapon rifle\n"   \
-    " help, ? <table>     if called without parameter, prints this help text\n"          \
+    " help, ? <table>     without parameter, display this help text\n"                   \
     "                        you can user either \"help animals\" or \"help weapons\"\n" \
     "                        to print a table of all animals or weapons\n"               \
-    " exit, quit          exits the program\n"
+    " exit, quit          exit program\n"
 
 #endif
 
