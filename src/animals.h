@@ -41,7 +41,7 @@ enum animalmood {
 	ANIM_SCARED = 0,
 	ANIM_NEUTRAL,
 	ANIM_AGGRESSIVE,
-	MAX_MOOD	 /* their total count */
+	MAX_MOOD  /* their total count */
 };
 
 enum animalmove {

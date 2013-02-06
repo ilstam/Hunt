@@ -30,11 +30,11 @@
 
 #define MAX_INPUT            255 /* max accepted len of stdin */
 
-#define MAX_CMD_ALIASES	       2
+#define MAX_CMD_ALIASES        2
 #define MAX_CMD_PARAMS         3
 
 #define STARTING_ANIMALS       5
-#define ADD_ANIM_ROUNDS	       4 /* rounds period for new animal to be added */
+#define ADD_ANIM_ROUNDS        4 /* rounds period for new animal to be added */
 
 #define DRUG_HEALTH           15 /* health that player gains when uses drugs */
 #define DRUG_COST             20
@@ -532,8 +532,8 @@ void start_menu(void)
 int main(void)
 {
 	char input[MAX_INPUT + 1];  /* user's stdin */
-	int rounds = 0;	     /* rounds played */
-	int id;	             /* animal id used by check_shoot() */
+	int rounds = 0;      /* rounds played */
+	int id;              /* animal id used by check_shoot() */
 
 	struct command cmdtable[MAX_COMMANDS] = {
 		/* .id             .aliases       .nparams       .params */

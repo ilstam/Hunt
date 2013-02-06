@@ -41,7 +41,7 @@ bool animals_add(struct listanimals *list, struct animal animtable[])
 	memcpy(&new_node->animal.type,
 	       &animtable[new_node->animal.type.id], sizeof(*animtable));
 	new_node->animal.health = ANIM_STARTING_HEALTH;
-	new_node->animal.mood = rand () % MAX_MOOD;	      /* random */
+	new_node->animal.mood = rand () % MAX_MOOD;              /* random */
 	new_node->animal.distance = rand () % ANIM_MAX_DISTANCE; /* random */
 
 	list->len++;
@@ -131,7 +131,7 @@ void animals_look(struct listanimals list)
 
 	printf("The following %d animals are on the scene now: \n\n", list.len);
 	for (an = list.head; an != NULL; an = an->next) {
-		printf("%d:%s	   \t"
+		printf("%d:%s           \t"
 		       "(hlth=%d att=%d def=%d spd=%d dist=%d mood=",
 		       an->animal.id, an->animal.type.name, an->animal.health,
 		       an->animal.type.attack, an->animal.type.defense,

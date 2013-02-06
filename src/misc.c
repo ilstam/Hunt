@@ -46,7 +46,7 @@ char *s_tolower(char *s)
  *    Return the number of tokens which s was broken to on success,
  *    else 0.
  */
-int s_tokenize(char *s,	       /* mutable string */
+int s_tokenize(char *s,        /* mutable string */
                char *tokens[], /* array of strings, to be filled by the
                                  function with NUL-terminated string tokens. */
                int ntoks,      /* maximum number of desired tokens.  */
