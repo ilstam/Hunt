@@ -29,31 +29,31 @@
  */
 bool animals_add(struct listanimals *list, struct animal animtable[])
 {
-        struct node *new_node;
+	struct node *new_node;
 
-        if ((new_node = calloc(1, sizeof(*new_node))) == NULL)
-                return false;  /* out of memory */
+	if ((new_node = calloc(1, sizeof(*new_node))) == NULL)
+		return false;  /* out of memory */
 
-        new_node->next = NULL;
-        new_node->animal.id = ++list->idcount;
-        new_node->animal.type.id = rand() % MAX_ANIMALTYPES; /* random value */
-        /* copy attributes of specific animal type */
-        memcpy(&new_node->animal.type,
-        &animtable[new_node->animal.type.id], sizeof(*animtable));
-        new_node->animal.health = ANIM_STARTING_HEALTH;
-        new_node->animal.mood = rand () % MAX_MOOD;              /* random */
-        new_node->animal.distance = rand () % ANIM_MAX_DISTANCE; /* random */
+	new_node->next = NULL;
+	new_node->animal.id = ++list->idcount;
+	new_node->animal.type.id = rand() % MAX_ANIMALTYPES; /* random value */
+	/* copy attributes of specific animal type */
+	memcpy(&new_node->animal.type,
+	       &animtable[new_node->animal.type.id], sizeof(*animtable));
+	new_node->animal.health = ANIM_STARTING_HEALTH;
+	new_node->animal.mood = rand () % MAX_MOOD;	      /* random */
+	new_node->animal.distance = rand () % ANIM_MAX_DISTANCE; /* random */
 
-        list->len++;
-        if (list->head == NULL) {
-                list->head = list->tail = new_node;
-                return true;
-        }
+	list->len++;
+	if (list->head == NULL) {
+		list->head = list->tail = new_node;
+		return true;
+	}
 
-        list->tail->next = new_node;
-        list->tail = new_node;
+	list->tail->next = new_node;
+	list->tail = new_node;
 
-        return true;
+	return true;
 }
 
 /*
@@ -63,24 +63,24 @@ bool animals_add(struct listanimals *list, struct animal animtable[])
  */
 void animals_delete(struct listanimals *list, int id)
 {
-        struct node *cur = list->head, *prev = NULL;
+	struct node *cur = list->head, *prev = NULL;
 
-        for (; cur != NULL && cur->animal.id < id;
-        prev = cur, cur = cur->next)
-                ; /* void */
+	for (; cur != NULL && cur->animal.id < id;
+	     prev = cur, cur = cur->next)
+		; /* void */
 
-        if (cur == NULL || cur->animal.id != id)
-                return; /* not found */
+	if (cur == NULL || cur->animal.id != id)
+		return; /* not found */
 
-        list->len--;
-        if (prev == NULL) {
-                list->head = cur->next;
-        } else  {
-                prev->next = cur->next;
-                if (cur->next == NULL)
-                        list->tail = prev;
-        }
-        free(cur);
+	list->len--;
+	if (prev == NULL) {
+		list->head = cur->next;
+	} else  {
+		prev->next = cur->next;
+		if (cur->next == NULL)
+			list->tail = prev;
+	}
+	free(cur);
 }
 
 /*
@@ -89,13 +89,13 @@ void animals_delete(struct listanimals *list, int id)
  */
 void animals_deleteall(struct listanimals *list)
 {
-        struct node *dummy = NULL;
+	struct node *dummy = NULL;
 
-        for (; list->head != NULL; list->head = dummy) {
-                dummy = list->head->next;
-                free(list->head);
-        }
-        list->len = 0;
+	for (; list->head != NULL; list->head = dummy) {
+		dummy = list->head->next;
+		free(list->head);
+	}
+	list->len = 0;
 }
 
 /*
@@ -106,13 +106,13 @@ void animals_deleteall(struct listanimals *list)
  */
 struct sceneanimal *animals_find(struct node *list, int id)
 {
-        struct node *anim = list;
-        for (; anim != NULL && anim->animal.id < id; anim = anim->next)
-                ; /* void */
+	struct node *anim = list;
+	for (; anim != NULL && anim->animal.id < id; anim = anim->next)
+		; /* void */
 
-        if (anim != NULL && anim->animal.id == id)
-                return &anim->animal;
-        return NULL;
+	if (anim != NULL && anim->animal.id == id)
+		return &anim->animal;
+	return NULL;
 }
 
 /*
@@ -122,35 +122,35 @@ struct sceneanimal *animals_find(struct node *list, int id)
  */
 void animals_look(struct listanimals list)
 {
-        struct node *an;
+	struct node *an;
 
-        if (!list.len) {
-                puts("There are no animals on the scene.");
-                return;
-        }
+	if (!list.len) {
+		puts("There are no animals on the scene.");
+		return;
+	}
 
-        printf("The following %d animals are on the scene now: \n\n", list.len);
-        for (an = list.head; an != NULL; an = an->next) {
-                printf("%d:%s           \t"
-                "(hlth=%d att=%d def=%d spd=%d dist=%d mood=",
-                an->animal.id, an->animal.type.name, an->animal.health,
-                an->animal.type.attack, an->animal.type.defense,
-                an->animal.type.speed, an->animal.distance);
+	printf("The following %d animals are on the scene now: \n\n", list.len);
+	for (an = list.head; an != NULL; an = an->next) {
+		printf("%d:%s	   \t"
+		       "(hlth=%d att=%d def=%d spd=%d dist=%d mood=",
+		       an->animal.id, an->animal.type.name, an->animal.health,
+		       an->animal.type.attack, an->animal.type.defense,
+		       an->animal.type.speed, an->animal.distance);
 
-                switch (an->animal.mood) {
-                case ANIM_SCARED:
-                        puts("scared)");
-                        break;
-                case ANIM_NEUTRAL:
-                        puts("neutral)");
-                        break;
-                case ANIM_AGGRESSIVE:
-                        puts("aggressive)");
-                        break;
-                default:
-                        break;
-            }
-        }
+		switch (an->animal.mood) {
+		case ANIM_SCARED:
+			puts("scared)");
+			break;
+		case ANIM_NEUTRAL:
+			puts("neutral)");
+			break;
+		case ANIM_AGGRESSIVE:
+			puts("aggressive)");
+			break;
+		default:
+			break;
+	    }
+	}
 }
 
 /*
@@ -160,42 +160,42 @@ void animals_look(struct listanimals list)
  */
 enum animalmove animals_decision(struct sceneanimal animal)
 {
-        int random = rand() % ANIM_MOVE_OPTIONS; /* random choise */
-        bool canatt = animal.distance <= ANIM_CANATT_DIST ? true : false;
+	int random = rand() % ANIM_MOVE_OPTIONS; /* random choise */
+	bool canatt = animal.distance <= ANIM_CANATT_DIST ? true : false;
 
-        #define nth   ANIMOVE_NTH
-        #define att   ANIMOVE_ATT
-        #define cls   ANIMOVE_CLS
-        #define away  ANIMOVE_AWAY
+	#define nth   ANIMOVE_NTH
+	#define att   ANIMOVE_ATT
+	#define cls   ANIMOVE_CLS
+	#define away  ANIMOVE_AWAY
 
-        switch(animal.mood) {
-        case ANIM_AGGRESSIVE:
-                if (canatt)
-                        return ((enum animalmove []) {att, att, att, att, att,
-                        cls, away, nth})[random];
-                else
-                        return ((enum animalmove []) {cls, cls, cls, cls, cls,
-                        cls, away, nth})[random];
-                break;
-        case ANIM_SCARED:
-                if (canatt)
-                        return ((enum animalmove []) {away, away, away, away,
-                        away, att, cls, nth})[random];
-                else
-                        return ((enum animalmove []) {away, away, away, away,
-                        away, away, cls, nth})[random];
-                break;
-        case ANIM_NEUTRAL:
-                if (canatt)
-                        return ((enum animalmove []) {att, att, cls, cls, away,
-                        away, nth, nth})[random];
-                else
-                        return ((enum animalmove []) {cls, cls, cls, away,away,
-                        away, nth, nth})[random];
-                break;
-        default: /* to satisfy compiler -- not used */
-                return 0;
-                break;
-        }
+	switch(animal.mood) {
+	case ANIM_AGGRESSIVE:
+		if (canatt)
+			return ((enum animalmove []) {att, att, att, att, att,
+			        cls, away, nth})[random];
+		else
+			return ((enum animalmove []) {cls, cls, cls, cls, cls,
+			        cls, away, nth})[random];
+		break;
+	case ANIM_SCARED:
+		if (canatt)
+			return ((enum animalmove []) {away, away, away, away,
+			        away, att, cls, nth})[random];
+		else
+			return ((enum animalmove []) {away, away, away, away,
+			        away, away, cls, nth})[random];
+		break;
+	case ANIM_NEUTRAL:
+		if (canatt)
+			return ((enum animalmove []) {att, att, cls, cls, away,
+			        away, nth, nth})[random];
+		else
+			return ((enum animalmove []) {cls, cls, cls, away,away,
+			        away, nth, nth})[random];
+		break;
+	default: /* to satisfy compiler -- not used */
+		return 0;
+		break;
+	}
 }
 

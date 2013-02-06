@@ -26,18 +26,18 @@
  */
 char *s_tolower(char *s)
 {
-        char *cp;
+	char *cp;
 
-        /* sanity checks */
-        if (s == NULL)
-                return NULL;
-        if (!*s)
-                return s;
+	/* sanity checks */
+	if (s == NULL)
+		return NULL;
+	if (!*s)
+		return s;
 
-        for (cp=s; (*cp=tolower(*cp)); cp++)
-                ; /* void */
+	for (cp=s; (*cp=tolower(*cp)); cp++)
+		; /* void */
 
-        return s;
+	return s;
 }
 
 /*
@@ -46,28 +46,28 @@ char *s_tolower(char *s)
  *    Return the number of tokens which s was broken to on success,
  *    else 0.
  */
-int s_tokenize(char *s,        /* mutable string */
+int s_tokenize(char *s,	       /* mutable string */
                char *tokens[], /* array of strings, to be filled by the
-                                  function with NUL-terminated string tokens. */
+                                 function with NUL-terminated string tokens. */
                int ntoks,      /* maximum number of desired tokens.  */
                const char *delims /* string consisting of the desired
                                      delimiter characters */
 )
 {
-        register int i;
+	register int i;
 
-        /* sanity checks */
-        if (s  == NULL || tokens == NULL || delims == NULL
-        || !*s || !*delims || ntoks < 1)
-                return 0;
+	/* sanity checks */
+	if (s  == NULL || tokens == NULL || delims == NULL
+	|| !*s || !*delims || ntoks < 1)
+		return 0;
 
-        tokens[0] = strtok(s, delims);
-        if (tokens[0] == NULL)
-                return 0;
+	tokens[0] = strtok(s, delims);
+	if (tokens[0] == NULL)
+		return 0;
 
-        for (i = 1; i < ntoks && (tokens[i] = strtok(NULL, delims)) != NULL; i++)
-                ; /* void */
+	for (i = 1; i < ntoks && (tokens[i] = strtok(NULL, delims)) != NULL; i++)
+		; /* void */
 
-        return i;
+	return i;
 }
 

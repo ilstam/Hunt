@@ -5,12 +5,12 @@
 #include <ctype.h>  /* tolower() */
 
 #if defined(__linux__) || defined(__unix__)
-        #define SYSTEM_CLEAR "clear"
+	#define SYSTEM_CLEAR "clear"
 #elif defined(_WIN32) || defined(__WINDOWS__) || defined(__TOS_WIN__)
-        #define SYSTEM_CLEAR "cls"
+	#define SYSTEM_CLEAR "cls"
 #else
-        /* fill this in with your platform-specific behaviour */
-        #define SYSTEM_CLEAR ""
+	/* fill this in with your platform-specific behaviour */
+	#define SYSTEM_CLEAR ""
 #endif
 
 
