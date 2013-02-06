@@ -323,8 +323,8 @@ void animal_move(struct listanimals *list, struct player *player)
 			an->animal.type.speed);
 			if (an->animal.distance > 100) { /* out of scene */
 				animals_delete(list, an->animal.id);
-				puts("\nOops!
-				     A terrified animal left the scene.");
+				puts("\nOops! "
+				     "A terrified animal left the scene.");
 			}
 			break;
 		case ANIMOVE_NTH:
