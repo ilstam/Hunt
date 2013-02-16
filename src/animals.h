@@ -2,7 +2,7 @@
 #define ANIMALS_H
 
 #include <stdio.h>   /* printf(), puts() */
-#include <stdlib.h>  /* calloc(), free(), rand() */
+#include <stdlib.h>  /* malloc(), free(), rand() */
 #include <string.h>  /* memcopy() */
 #include <stdbool.h> /* bool, true, false */
 

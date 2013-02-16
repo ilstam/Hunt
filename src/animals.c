@@ -31,7 +31,7 @@ bool animals_add(struct listanimals *list, struct animal animtable[])
 {
 	struct node *new_node;
 
-	if ((new_node = calloc(1, sizeof(*new_node))) == NULL)
+	if ((new_node = malloc(sizeof(*new_node))) == NULL)
 		return false;  /* out of memory */
 
 	new_node->next = NULL;
