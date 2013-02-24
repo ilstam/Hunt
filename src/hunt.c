@@ -500,7 +500,7 @@ void start_menu(void)
                                     /* with NUL-terminated string tokens*/
 
 	for (;;) {
-		system("clear");
+		system(SYSTEM_CLEAR);
 		printf(START_MENU, APP_NAME);
 
 		fgets(input, sizeof(input), stdin);
