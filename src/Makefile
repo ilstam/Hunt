@@ -10,7 +10,7 @@ hunt.o: hunt.c animals.h weapons.h misc.h info.h
 animals.o: animals.c animals.h
 	$(CC) $(CFLAGS) animals.c
 
-mylibrary.o: misc.c misc.h
+misc.o: misc.c misc.h
 	$(CC) $(CFLAGS) misc.c
 
 clean:
